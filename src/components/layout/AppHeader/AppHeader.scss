@@ -1,0 +1,57 @@
+@use "../../../styles/variables" as *;
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: $color-background;
+  padding: $space-md 0;
+  margin-bottom: $space-md;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  svg {
+    color: $color-primary;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+
+    h2 {
+      margin: 0;
+      font-size: $font-2xl;
+      font-weight: 700;
+      color: $color-text-dark;
+    }
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+  }
+
+  &__menu-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-primary;
+  }
+
+  &__icon {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-dark;
+  }
+}

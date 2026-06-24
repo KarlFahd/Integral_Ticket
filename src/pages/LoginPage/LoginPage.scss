@@ -1,0 +1,82 @@
+@use "../../styles/variables" as *;
+
+.login-page {
+  min-height: 100vh;
+  background-color: $color-background;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: $space-md;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  img {
+    width: 50px;
+    height: 50px;
+  }
+
+  &__text {
+    h2 {
+      margin: 0;
+      color: $color-text-dark;
+    }
+
+    p {
+      margin: 0;
+      color: $color-primary;
+    }
+  }
+}
+
+.login-card {
+  width: 900px;
+  max-width: 100%;
+  min-height: 560px;
+  background-color: $color-white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  display: flex;
+}
+
+.left-panel {
+  flex: 1;
+  background-color: $color-panel;
+  padding: $space-2xl;
+}
+
+.right-panel {
+  flex: 1;
+  padding: $space-2xl;
+}
+
+// ─── Tablet ───────────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-lg - 1px}) {
+  .login-card {
+    width: 680px;
+  }
+}
+
+// ─── Mobile ───────────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-md - 1px}) {
+  .login-card {
+    width: 100%;
+    min-height: auto;
+    flex-direction: column;
+  }
+
+  .left-panel {
+    display: none;
+  }
+
+  .right-panel {
+    padding: $space-xl $space-lg;
+  }
+}

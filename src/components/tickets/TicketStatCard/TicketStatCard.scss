@@ -1,0 +1,58 @@
+@use "../../../styles/variables" as *;
+
+.ticket-stat-card {
+  background: $color-white;
+
+  border-radius: $radius-md;
+
+  padding: $space-lg;
+
+  display: flex;
+  gap: $space-md;
+
+  min-height: 110px;
+
+  &__icon {
+    width: 42px;
+    height: 42px;
+
+    background: $color-background;
+
+    border-radius: $radius-md;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &--primary { color: $color-primary; }
+    &--warning { color: $color-warning; }
+    &--info    { color: $color-info; }
+    &--success { color: $color-success; }
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $font-base;
+    font-weight: 500;
+    color: $color-text-dark;
+  }
+
+  &__count {
+    margin: $space-sm 0;
+
+    &--primary { color: $color-primary; }
+    &--warning { color: $color-warning; }
+    &--info    { color: $color-info; }
+    &--success { color: $color-success; }
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: $font-xs;
+    color: $color-text-light;
+  }
+}

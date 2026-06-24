@@ -1,0 +1,40 @@
+@use "../../../styles/variables" as *;
+
+.base-button {
+  width: 100%;
+  height: $height-input;
+
+  border: none;
+  border-radius: $radius-sm;
+
+  cursor: pointer;
+
+  font-size: $font-md;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+
+  transition: $transition-fast;
+
+  &--primary {
+    background-color: $color-primary;
+    color: $color-white;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  &--secondary {
+    background-color: $color-white;
+    color: $color-text-dark;
+    border: 1px solid $color-border;
+
+    &:hover {
+      background-color: $color-background;
+    }
+  }
+}

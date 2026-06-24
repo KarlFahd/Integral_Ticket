@@ -1,0 +1,72 @@
+@use "../../../styles/variables" as *;
+
+.login-form {
+  height: 100%;
+
+  &__title {
+    margin-bottom: $space-sm;
+  }
+
+  &__subtitle {
+    margin-bottom: $space-lg;
+    color: $color-text-light;
+    font-size: $font-md;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+  }
+
+  &__options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: $font-sm;
+
+    a {
+      text-decoration: none;
+      color: $color-primary;
+    }
+  }
+
+  &__separator {
+    text-align: center;
+    color: $color-text-light;
+    font-size: $font-sm;
+  }
+
+  &__google-button {
+    width: 100%;
+    height: $height-input;
+
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+
+    background-color: $color-white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: $space-sm;
+
+    cursor: pointer;
+
+    transition: $transition-fast;
+
+    &:hover {
+      background-color: $color-background;
+    }
+
+    img {
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      font-size: $font-md;
+    }
+  }
+}

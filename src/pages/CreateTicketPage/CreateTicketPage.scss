@@ -1,0 +1,352 @@
+@use "../../styles/variables" as *;
+
+.create-ticket-page {
+  display: flex;
+  min-height: 100vh;
+  background: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: 2fr 350px;
+    gap: $space-lg;
+  }
+}
+
+// ─── Ticket Form (left panel) ──────────────────────────────────────────────────
+
+.ticket-form {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-xl;
+
+  &__title {
+    margin: 0 0 $space-sm;
+    color: $color-text-dark;
+  }
+
+  &__subtitle {
+    color: $color-text-light;
+    margin-bottom: $space-lg;
+    font-size: $font-md;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-md;
+    margin-top: $space-lg;
+
+    .base-button {
+      width: 160px;
+    }
+  }
+}
+
+// ─── Form Groups ──────────────────────────────────────────────────────────────
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-lg;
+  margin-bottom: $space-md;
+}
+
+.form-group {
+  margin-bottom: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  &__label {
+    font-size: $font-md;
+    font-weight: 600;
+    color: $color-text-dark;
+  }
+
+  &__required {
+    color: $color-danger;
+  }
+
+  &__optional {
+    color: $color-text-light;
+    font-weight: 400;
+  }
+
+  &__select {
+    height: $height-input;
+    padding: 0 $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    font-size: $font-md;
+    background: $color-white;
+    cursor: pointer;
+    outline: none;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__textarea-wrapper {
+    position: relative;
+  }
+
+  &__textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: $space-sm $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    font-size: $font-md;
+    font-family: inherit;
+    resize: none;
+    min-height: 180px;
+    outline: none;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__char-count {
+    position: absolute;
+    bottom: $space-sm;
+    right: $space-md;
+    font-size: $font-xs;
+    color: $color-text-muted;
+  }
+}
+
+// ─── Priority Buttons ─────────────────────────────────────────────────────────
+
+.priority-buttons {
+  display: flex;
+  gap: $space-sm;
+}
+
+.priority-button {
+  padding: $space-sm $space-md;
+  border-radius: $radius-md;
+  cursor: pointer;
+  background: $color-white;
+  font-size: $font-md;
+  font-weight: 500;
+  transition: $transition-fast;
+
+  &--low {
+    border: 1px solid $color-success;
+    color: $color-success;
+
+    &.priority-button--active {
+      background: $color-success;
+      color: $color-white;
+    }
+  }
+
+  &--medium {
+    border: 1px solid $color-warning;
+    color: $color-warning;
+
+    &.priority-button--active {
+      background: $color-warning;
+      color: $color-white;
+    }
+  }
+
+  &--high {
+    border: 1px solid $color-danger;
+    color: $color-danger;
+
+    &.priority-button--active {
+      background: $color-danger;
+      color: $color-white;
+    }
+  }
+}
+
+// ─── Upload Box ───────────────────────────────────────────────────────────────
+
+.upload-box {
+  height: 120px;
+  border: 2px dashed $color-border;
+  border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  &:hover {
+    border-color: $color-primary;
+  }
+
+  p {
+    margin: 0 0 $space-xs;
+    font-size: $font-md;
+    color: $color-text-dark;
+  }
+
+  span {
+    color: $color-text-muted;
+    font-size: $font-sm;
+  }
+
+  &__link {
+    color: $color-primary;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &--selected {
+    flex-direction: row;
+    height: auto;
+    padding: $space-md;
+    border-style: solid;
+    border-color: $color-primary;
+    gap: $space-sm;
+    cursor: default;
+    color: $color-primary;
+
+    &:hover {
+      border-color: $color-primary;
+    }
+  }
+
+  &__filename {
+    flex: 1;
+    font-size: $font-md;
+    color: $color-text-dark;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__remove {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: $color-danger;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    flex-shrink: 0;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-lg - 1px}) {
+  .create-ticket-page__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: #{$bp-md - 1px}) {
+  .create-ticket-page__content {
+    padding: $space-md;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-form {
+    padding: $space-lg;
+  }
+}
+
+// ─── Side Panel (right) ───────────────────────────────────────────────────────
+
+.ticket-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.side-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  box-shadow: $shadow-sm;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    margin: 0 0 $space-xs;
+    font-size: $font-base;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  &__subtitle {
+    color: $color-text-light;
+    font-size: $font-md;
+    margin: 0 0 $space-md;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  &__item {
+    width: 100%;
+    height: $height-button;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 $space-md;
+    cursor: pointer;
+    font-size: $font-md;
+    color: $color-text-dark;
+    transition: $transition-fast;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+
+  &__guidelines {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: $space-sm;
+      color: $color-text-light;
+      font-size: $font-md;
+      line-height: 1.5;
+
+      svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+        color: $color-success;
+      }
+    }
+  }
+}

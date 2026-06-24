@@ -1,0 +1,45 @@
+@use "../../styles/variables" as *;
+
+.client-dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  background-color: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+    min-width: 0;
+  }
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-lg;
+  margin-bottom: $space-lg;
+}
+
+.tickets-list {
+  margin-top: $space-md;
+}
+
+// ─── Tablet ───────────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-lg - 1px}) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// ─── Mobile ───────────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-md - 1px}) {
+  .client-dashboard-page__content {
+    padding: $space-md;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-md;
+  }
+}

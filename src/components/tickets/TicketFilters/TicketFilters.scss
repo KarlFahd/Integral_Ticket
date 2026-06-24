@@ -1,0 +1,84 @@
+@use "../../../styles/variables" as *;
+
+.ticket-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  &__search {
+    flex: 1;
+    min-width: 0;
+    background: $color-white;
+    border: 1px solid $color-border-medium;
+    border-radius: $radius-md;
+    height: $height-button;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 $space-md;
+    color: $color-text-light;
+
+    input {
+      border: none;
+      outline: none;
+      width: 100%;
+      background: transparent;
+      font-size: $font-md;
+    }
+  }
+
+  &__select {
+    flex-shrink: 0;
+    background: $color-white;
+    border: 1px solid $color-border-medium;
+    border-radius: $radius-md;
+    height: $height-button;
+    padding: 0 $space-md;
+    cursor: pointer;
+    font-size: $font-md;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__create {
+    flex-shrink: 0;
+    height: $height-button;
+    padding: 0 $space-lg;
+    border: none;
+    border-radius: $radius-md;
+    background: $color-primary;
+    color: $color-white;
+    font-size: $font-md;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  // ─── Mobile ────────────────────────────────────────────────────────────────
+
+  @media (max-width: #{$bp-md - 1px}) {
+    flex-wrap: wrap;
+
+    &__search {
+      flex: 1 1 100%;
+    }
+
+    &__select {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__create {
+      flex: 1 1 100%;
+    }
+  }
+}

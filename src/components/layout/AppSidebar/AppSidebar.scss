@@ -1,0 +1,117 @@
+@use "../../../styles/variables" as *;
+
+.app-sidebar {
+  width: $sidebar-width;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  flex-shrink: 0;
+  overflow-y: auto;
+  background-color: $color-white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid $color-border-light;
+  padding: $space-sm 0;
+  transition: $transition-base;
+
+  &--collapsed {
+    width: $sidebar-width-collapsed;
+  }
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    gap: $space-lg;
+  }
+
+  &__logo {
+    display: flex;
+    justify-content: center;
+
+    img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  &__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  &__item {
+    width: calc(100% - $space-md);
+    height: $height-button;
+    margin: 0 $space-sm;
+    border: none;
+    border-radius: $radius-md;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    padding: 0 $space-sm;
+    cursor: pointer;
+    color: $color-text-dark;
+    transition: $transition-fast;
+
+    &:hover {
+      background-color: $color-background;
+    }
+
+    &--active {
+      color: $color-primary;
+      background-color: $color-primary-light;
+    }
+
+    span {
+      font-size: $font-md;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+
+  // ─── Mobile overlay backdrop ─────────────────────────────────────────────────
+
+  &__overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+
+    @media (max-width: #{$bp-md - 1px}) {
+      &--visible {
+        display: block;
+      }
+    }
+  }
+}
+
+// ─── Mobile sidebar (slide-in drawer) ────────────────────────────────────────
+
+@media (max-width: #{$bp-md - 1px}) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: $sidebar-width;
+    z-index: 1000;
+    transform: translateX(0);
+    box-shadow: $shadow-md;
+
+    &--collapsed {
+      width: $sidebar-width;
+      transform: translateX(-100%);
+    }
+  }
+}

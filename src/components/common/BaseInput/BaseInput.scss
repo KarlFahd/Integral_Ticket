@@ -1,0 +1,35 @@
+@use "../../../styles/variables" as *;
+
+.base-input {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  &__label {
+    font-size: $font-md;
+    font-weight: 600;
+    color: $color-text-dark;
+  }
+
+  &__required {
+    color: $color-danger;
+    margin-left: 2px;
+  }
+
+  &__field {
+    height: $height-input;
+
+    padding: 0 $space-md;
+
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+
+    outline: none;
+
+    font-size: $font-md;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+}

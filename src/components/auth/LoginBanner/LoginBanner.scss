@@ -1,0 +1,39 @@
+@use "../../../styles/variables" as *;
+
+.login-banner {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  &__title {
+    color: $color-text-dark;
+
+    span {
+      color: $color-primary;
+    }
+  }
+
+  &__description {
+    color: $color-text-light;
+    line-height: 1.6;
+  }
+
+  &__illustration {
+    flex: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-primary;
+    font-size: 120px;
+  }
+
+&__features {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  color: $color-primary;
+}
+}

@@ -1,0 +1,62 @@
+@use "../../../styles/variables" as *;
+
+.ticket-card {
+  background: $color-white;
+
+  border-radius: $radius-md;
+
+  padding: $space-lg;
+
+  margin-bottom: $space-md;
+
+  border: 1px solid $color-border-light;
+
+  cursor: pointer;
+  transition: $transition-fast;
+
+  &:hover {
+    border-color: $color-primary;
+    box-shadow: $shadow-sm;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: $space-sm;
+
+    h3 {
+      margin: 0;
+      font-size: $font-lg;
+      color: $color-text-dark;
+    }
+  }
+
+  &__status {
+    font-size: $font-md;
+    font-weight: 500;
+
+    &--success { color: $color-success; }
+    &--warning { color: $color-warning; }
+    &--danger  { color: $color-danger; }
+    &--info    { color: $color-info; }
+  }
+
+  &__description {
+    color: $color-text-light;
+
+    margin-bottom: $space-lg;
+
+    max-width: 500px;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+
+    font-size: $font-sm;
+    color: $color-text-muted;
+  }
+}

@@ -1,0 +1,19 @@
+@use "../../styles/variables" as *;
+
+.agent-ticket-page {
+  display: flex;
+  min-height: 100vh;
+  background: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+    min-width: 0;
+  }
+}
+
+@media (max-width: #{$bp-md - 1px}) {
+  .agent-ticket-page__content {
+    padding: $space-md;
+  }
+}
