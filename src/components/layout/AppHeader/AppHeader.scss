@@ -20,13 +20,27 @@
     display: flex;
     align-items: center;
     gap: $space-md;
+  }
+
+  &__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 
     h2 {
       margin: 0;
       font-size: $font-2xl;
       font-weight: 700;
       color: $color-text-dark;
+      line-height: 1.2;
     }
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: $font-sm;
+    color: $color-text-muted;
+    font-weight: 400;
   }
 
   &__right {

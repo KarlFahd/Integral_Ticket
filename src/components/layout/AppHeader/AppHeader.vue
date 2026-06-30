@@ -5,6 +5,17 @@ import { useRouter } from 'vue-router'
 import { Menu, Bell, CircleHelp, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '../../../stores/authStore.js'
 
+defineProps({
+  title: {
+    type: String,
+    default: 'Support Ticket',
+  },
+  subtitle: {
+    type: String,
+    default: '',
+  },
+})
+
 const emit = defineEmits(['toggle-sidebar'])
 
 const router = useRouter()
@@ -32,9 +43,10 @@ const handleLogout = () => {
         <Menu :size="28" />
       </button>
 
-      <h2>
-        Support Ticket
-      </h2>
+      <div class="app-header__title-group">
+        <h2>{{ title }}</h2>
+        <p v-if="subtitle" class="app-header__subtitle">{{ subtitle }}</p>
+      </div>
 
     </div>
 

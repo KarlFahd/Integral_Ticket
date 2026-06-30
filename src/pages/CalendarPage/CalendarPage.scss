@@ -1,0 +1,423 @@
+@use "../../styles/variables" as *;
+
+.calendar-page {
+  display: flex;
+  min-height: 100vh;
+  background: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+    overflow: hidden;
+  }
+}
+
+// ── Two-column layout ─────────────────────────────────────────────────────────
+.cal-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: $space-lg;
+  align-items: start;
+  margin-top: $space-lg;
+}
+
+// ── Calendar card ─────────────────────────────────────────────────────────────
+.cal-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-xl;
+  border: 1px solid $color-border;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-lg;
+  }
+
+  &__month {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+}
+
+.cal-nav-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  color: $color-text-dark;
+  transition: $transition-fast;
+
+  &:hover {
+    background: $color-primary;
+    color: $color-white;
+    border-color: $color-primary;
+  }
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+
+  &--header {
+    margin-bottom: 4px;
+  }
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  font-size: $font-md;
+  cursor: default;
+  position: relative;
+
+  &--header {
+    aspect-ratio: auto;
+    padding: $space-xs 0;
+    font-size: $font-sm;
+    font-weight: 600;
+    color: $color-text-muted;
+    background: none;
+    border-radius: 0;
+    flex-direction: row;
+  }
+
+  &--empty { background: transparent; }
+
+  &--clickable { cursor: pointer; }
+
+  &:not(&--header):not(&--empty) {
+    background: $color-background;
+    color: $color-text-dark;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+  }
+
+  &--today {
+    background: $color-primary !important;
+    color: $color-white !important;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.35);
+  }
+
+  &--selected:not(&--today) {
+    background: $color-primary-light !important;
+    color: $color-primary !important;
+    font-weight: 600;
+    border: 2px solid $color-primary;
+  }
+
+  &--weekend:not(&--today):not(&--selected) {
+    color: $color-primary;
+  }
+
+  &__number {
+    font-size: $font-md;
+    line-height: 1;
+  }
+
+  &__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: $color-primary;
+    margin-top: 3px;
+
+    .cal-cell--today & { background: $color-white; }
+  }
+}
+
+// ── Events panel ─────────────────────────────────────────────────────────────
+.events-panel {
+  background: $color-white;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__date-block {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  &__date-icon { color: $color-primary; }
+
+  &__date-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-text-dark;
+  }
+
+  &__today-btn {
+    font-size: 12px;
+    font-weight: 500;
+    color: $color-primary;
+    background: $color-primary-light;
+    border: 1px solid rgba(124,58,237,.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover { background: rgba(124,58,237,.15); }
+  }
+
+  &__add-wrap {
+    padding: 14px 18px;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__add-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px;
+    border: 1.5px dashed $color-border;
+    border-radius: $radius-md;
+    background: transparent;
+    color: $color-text-muted;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+      background: $color-primary-light;
+    }
+  }
+
+  &__list {
+    flex: 1;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 160px;
+    max-height: 340px;
+    overflow-y: auto;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 100%;
+    min-height: 120px;
+    color: $color-text-muted;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  &__empty-hint {
+    font-size: 12px;
+    color: lighten(#9ca3af, 10%);
+  }
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-top: 1px solid $color-border;
+    background: $color-background;
+  }
+
+  &__summary-label {
+    font-size: 12px;
+    color: $color-text-muted;
+  }
+
+  &__summary-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-primary;
+  }
+}
+
+// ── Event form ────────────────────────────────────────────────────────────────
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color .15s;
+
+    &:focus { border-color: $color-primary; }
+  }
+
+  &__time {
+    padding: 8px 12px;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .15s;
+
+    &:focus { border-color: $color-primary; }
+  }
+
+  &__colors {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    outline-offset: 3px;
+    transition: transform .1s;
+
+    &:hover { transform: scale(1.15); }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__cancel {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background: transparent;
+    font-size: 13px;
+    cursor: pointer;
+    color: $color-text-muted;
+
+    &:hover { background: $color-background; }
+  }
+
+  &__save {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: $radius-md;
+    background: $color-primary;
+    color: $color-white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+
+    &:hover:not(:disabled) { background: darken(#7c3aed, 8%); }
+    &:disabled { opacity: .45; cursor: not-allowed; }
+  }
+}
+
+// ── Event item card ───────────────────────────────────────────────────────────
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $color-background;
+  border-radius: $radius-md;
+  padding: 10px 12px;
+  border: 1px solid $color-border;
+  transition: box-shadow .15s;
+
+  &:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+
+  &__stripe {
+    width: 4px;
+    min-height: 36px;
+    border-radius: 4px;
+    background: var(--ev-color, #7c3aed);
+    flex-shrink: 0;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: $color-text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  &__delete {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #d1d5db;
+    border-radius: $radius-md;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: $transition-fast;
+
+    &:hover {
+      background: #fef2f2;
+      color: #ef4444;
+    }
+  }
+}

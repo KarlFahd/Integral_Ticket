@@ -1,7 +1,7 @@
 <script setup>
 import './AgentDashboardPage.scss'
 
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useSidebar } from '../../composables/useSidebar.js'
@@ -29,6 +29,8 @@ const goToTicket = (id) => {
 
 const store = useTicketStore()
 const { tickets, openCount, pendingCount, inProgressCount, resolvedCount } = storeToRefs(store)
+
+onMounted(() => store.fetchTickets())
 
 // ─── Filters ──────────────────────────────────────────────────────────────────
 
@@ -76,15 +78,9 @@ const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#10B981', '#EF4444']
 
     <main class="agent-dashboard__content">
 
-      <AppHeader @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Support Dashboard" subtitle="Manage and resolve support ticket" @toggle-sidebar="toggleSidebar" />
 
       <div class="agent-dashboard__inner">
-
-        <!-- Page heading -->
-        <div class="agent-dashboard__heading">
-          <h2 class="agent-dashboard__title">Support Dashboard</h2>
-          <p class="agent-dashboard__subtitle">Manage and resolve support ticket</p>
-        </div>
 
         <div class="agent-dashboard__body">
 
@@ -170,11 +166,10 @@ const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#10B981', '#EF4444']
 
               <select v-model="filterCategory" class="agent-filters__select">
                 <option value="">All Category</option>
-                <option value="IT Support">IT Support</option>
-                <option value="Hardware">Hardware</option>
-                <option value="Software">Software</option>
-                <option value="Network">Network</option>
-                <option value="Account">Account</option>
+                <option value="hardware">Hardware</option>
+                <option value="software">Software</option>
+                <option value="network">Network</option>
+                <option value="account">Account</option>
               </select>
 
               <button class="agent-filters__export">

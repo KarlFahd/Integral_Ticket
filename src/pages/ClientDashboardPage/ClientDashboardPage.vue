@@ -1,7 +1,7 @@
 <script setup>
 import './ClientDashboardPage.scss'
 
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSidebar } from '../../composables/useSidebar.js'
 import { Ticket, Timer, RefreshCw, CheckCircle } from 'lucide-vue-next'
@@ -13,10 +13,14 @@ import TicketStatCard from '../../components/tickets/TicketStatCard/TicketStatCa
 import TicketFilters from '../../components/tickets/TicketFilters/TicketFilters.vue'
 import TicketCard from '../../components/tickets/TicketCard/TicketCard.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
+import { useAuthStore } from '../../stores/authStore.js'
 
 const router = useRouter()
 const store = useTicketStore()
-const { tickets, openCount, pendingCount, inProgressCount, resolvedCount } = storeToRefs(store)
+const authStore = useAuthStore()
+const { tickets } = storeToRefs(store)
+
+onMounted(() => store.fetchTickets())
 
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
@@ -25,8 +29,17 @@ const selectedStatus = ref('All')
 const selectedPriority = ref('All')
 const selectedCategory = ref('All')
 
+const myTickets = computed(() =>
+  tickets.value.filter(t => t.createdBy === authStore.username)
+)
+
+const openCount       = computed(() => myTickets.value.filter(t => t.status === 'Open').length)
+const pendingCount    = computed(() => myTickets.value.filter(t => t.status === 'Pending').length)
+const inProgressCount = computed(() => myTickets.value.filter(t => t.status === 'In Progress').length)
+const resolvedCount   = computed(() => myTickets.value.filter(t => t.status === 'Approved' || t.status === 'Resolved').length)
+
 const filteredTickets = computed(() => {
-  return tickets.value.filter(ticket => {
+  return myTickets.value.filter(ticket => {
     const matchesSearch =
       ticket.title.toLowerCase().includes(searchText.value.toLowerCase()) ||
       ticket.description.toLowerCase().includes(searchText.value.toLowerCase())
@@ -125,6 +138,9 @@ const goToTicket = (id) => {
           :date="ticket.date"
           :status="ticket.status"
           :status-variant="ticket.statusVariant"
+          :priority="ticket.priority"
+          :priority-variant="ticket.priorityVariant"
+          :category="ticket.category"
           @select="goToTicket"
         />
 

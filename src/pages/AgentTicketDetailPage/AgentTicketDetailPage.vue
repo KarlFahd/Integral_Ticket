@@ -2,9 +2,8 @@
 import '../TicketDetailPage/TicketDetailPage.scss'
 import './AgentTicketDetailPage.scss'
 
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
 import { useSidebar } from '../../composables/useSidebar.js'
 import {
   ArrowLeft,
@@ -19,22 +18,50 @@ import {
   Trash2,
   CircleUserRound,
   Check,
+  Search,
 } from 'lucide-vue-next'
 
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
+import { useAuthStore } from '../../stores/authStore.js'
+import { ticketApi } from '../../services/ticketApi.js'
 
 const route = useRoute()
 const router = useRouter()
 const store = useTicketStore()
-const { tickets, conversations } = storeToRefs(store)
+const authStore = useAuthStore()
 
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar(true)
 
-const ticket = computed(() =>
-  tickets.value.find(t => t.id === Number(route.params.id))
-)
+const ticket = ref(null)
+const messages = ref([])
+const messagesContainer = ref(null)
+let pollInterval = null
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    }
+  })
+}
+
+const loadMessages = async () => {
+  if (!ticket.value) return
+  messages.value = await ticketApi.getMessages(ticket.value.id)
+  scrollToBottom()
+}
+
+onMounted(async () => {
+  ticket.value = await store.fetchTicket(Number(route.params.id))
+  await loadMessages()
+  pollInterval = setInterval(loadMessages, 4000)
+})
+
+onUnmounted(() => {
+  clearInterval(pollInterval)
+})
 
 const clientName = computed(() => ticket.value?.createdBy || 'Employee')
 
@@ -42,16 +69,37 @@ const goBack = () => router.push('/agent-dashboard')
 
 // ─── Conversation ─────────────────────────────────────────────────────────────
 
-const message = ref('')
+const message     = ref('')
+const searchQuery = ref('')
 
-const ticketConversations = computed(() =>
-  conversations.value[ticket.value?.id] || []
-)
+const escapeHtml = (str) =>
+  str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-const handleSend = () => {
+const highlightText = (text, query) => {
+  const safe = escapeHtml(text)
+  if (!query.trim()) return safe
+  const pattern = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return safe.replace(new RegExp(pattern, 'gi'), m => `<mark class="conversation__highlight">${m}</mark>`)
+}
+
+const filteredMessages = computed(() => {
+  if (!searchQuery.value.trim()) return messages.value
+  const q = searchQuery.value.toLowerCase()
+  return messages.value.filter(m => m.text.toLowerCase().includes(q))
+})
+
+watch(searchQuery, (q) => { if (!q) scrollToBottom() })
+
+const handleSend = async () => {
   if (!message.value.trim()) return
-  store.sendMessage(ticket.value.id, { isAgent: true, text: message.value.trim() })
+  const sent = await ticketApi.sendMessage(ticket.value.id, {
+    sender:  authStore.username,
+    isAgent: true,
+    message: message.value.trim(),
+  })
+  messages.value.push(sent)
   message.value = ''
+  scrollToBottom()
 }
 
 // ─── Progress Timeline ────────────────────────────────────────────────────────
@@ -91,8 +139,9 @@ const STATUS_OPTIONS = [
   { label: 'Rejected',    value: 'Rejected',    variant: 'danger'  },
 ]
 
-const handleUpdateStatus = (newStatus) => {
-  store.updateTicketStatus(ticket.value.id, newStatus)
+const handleUpdateStatus = async (newStatus) => {
+  const updated = await store.updateTicketStatus(ticket.value.id, newStatus)
+  if (updated) ticket.value = updated
   openAction.value = null
 }
 </script>
@@ -104,7 +153,7 @@ const handleUpdateStatus = (newStatus) => {
 
     <main class="agent-ticket-page__content">
 
-      <AppHeader @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Support Dashboard" subtitle="Manage and resolve support ticket" @toggle-sidebar="toggleSidebar" />
 
       <div v-if="ticket">
 
@@ -172,31 +221,40 @@ const handleUpdateStatus = (newStatus) => {
             <!-- Conversation -->
             <div class="conversation">
 
-              <h3 class="conversation__title">Conversation</h3>
+              <div class="conversation__header">
+                <h3 class="conversation__title">Conversation</h3>
 
-              <div class="conversation__messages">
+                <div class="conversation__search">
+                  <Search :size="13" class="conversation__search-icon" />
+                  <input
+                    v-model="searchQuery"
+                    type="text"
+                    class="conversation__search-input"
+                    placeholder="Search messages…"
+                  />
+                  <span v-if="searchQuery" class="conversation__search-count">
+                    {{ filteredMessages.length }} result{{ filteredMessages.length !== 1 ? 's' : '' }}
+                  </span>
+                  <button v-if="searchQuery" class="conversation__search-clear" @click="searchQuery = ''">✕</button>
+                </div>
+              </div>
+
+              <div ref="messagesContainer" class="conversation__messages">
+
+                <div v-if="filteredMessages.length === 0" class="conversation__empty">
+                  {{ searchQuery ? 'No messages match your search.' : 'No messages yet. Type below to start the conversation.' }}
+                </div>
 
                 <div
-                  v-for="msg in ticketConversations"
+                  v-for="msg in filteredMessages"
                   :key="msg.id"
-                  class="conversation__message"
+                  :class="['conversation__message', msg.isAgent ? 'conversation__message--mine' : 'conversation__message--theirs']"
                 >
-
-                  <div class="conversation__message-header">
-                    <div class="conversation__sender">
-                      <CircleUserRound :size="34" class="conversation__avatar" />
-                      <span class="conversation__author">
-                        {{ msg.isAgent ? 'You' : clientName }}
-                      </span>
-                      <span :class="['conversation__badge', msg.isAgent ? 'conversation__badge--agent' : 'conversation__badge--employee']">
-                        {{ msg.role }}
-                      </span>
-                    </div>
+                  <div class="conversation__bubble" v-html="highlightText(msg.text, searchQuery)"></div>
+                  <div class="conversation__meta">
+                    <span class="conversation__sender-name">{{ msg.isAgent ? 'You' : clientName }}</span>
                     <span class="conversation__time">{{ msg.time }}</span>
                   </div>
-
-                  <p class="conversation__text">{{ msg.text }}</p>
-
                 </div>
 
               </div>
@@ -206,8 +264,9 @@ const handleUpdateStatus = (newStatus) => {
                 <textarea
                   v-model="message"
                   class="conversation__textarea"
-                  placeholder="Type Your Message...."
+                  placeholder="Type your message… "
                   rows="3"
+                  @keydown.enter.exact.prevent="handleSend"
                 ></textarea>
 
                 <div class="conversation__actions">

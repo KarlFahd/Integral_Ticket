@@ -1,0 +1,257 @@
+@use "../../styles/variables" as *;
+
+.overview-page {
+  display: flex;
+  min-height: 100vh;
+  background: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+    min-width: 0;
+  }
+}
+
+.overview-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-lg;
+  gap: $space-md;
+
+  &__name {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: $font-md;
+    color: $color-text-muted;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    background: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: $radius-md;
+    padding: $space-sm $space-lg;
+    font-size: $font-md;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: $transition-fast;
+
+    &:hover { opacity: 0.9; }
+  }
+}
+
+// ── Stat cards ────────────────────────────────────────────────────────────────
+
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  @media (max-width: #{$bp-lg - 1px}) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: #{$bp-sm - 1px}) { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  border-left: 4px solid transparent;
+
+  &--primary { border-color: $color-primary; .stat-card__icon { background: $color-primary-light; color: $color-primary; } }
+  &--warning  { border-color: $color-warning;  .stat-card__icon { background: #fff8e1; color: $color-warning; } }
+  &--info     { border-color: $color-info;     .stat-card__icon { background: #e3f2fd; color: $color-info; } }
+  &--success  { border-color: $color-success;  .stat-card__icon { background: #e8f5e9; color: $color-success; } }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__body { display: flex; flex-direction: column; }
+
+  &__value {
+    font-size: 28px;
+    font-weight: 700;
+    color: $color-text-dark;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: $font-sm;
+    color: $color-text-muted;
+    margin-top: 4px;
+  }
+}
+
+// ── Two-column grid ───────────────────────────────────────────────────────────
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-lg;
+
+  @media (max-width: #{$bp-lg - 1px}) { grid-template-columns: 1fr; }
+}
+
+.overview-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-md;
+  }
+
+  &__title {
+    margin: 0 0 $space-md;
+    font-size: $font-base;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: $font-sm;
+    color: $color-primary;
+    font-weight: 500;
+    padding: 0;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+.overview-empty {
+  color: $color-text-muted;
+  font-size: $font-md;
+  font-style: italic;
+  padding: $space-md 0;
+}
+
+// ── Category bar chart ────────────────────────────────────────────────────────
+
+.cat-chart {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+  }
+
+  &__label {
+    width: 80px;
+    font-size: $font-sm;
+    color: $color-text-light;
+    flex-shrink: 0;
+    text-transform: capitalize;
+  }
+
+  &__track {
+    flex: 1;
+    height: 10px;
+    background: $color-background;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  &__bar {
+    height: 100%;
+    background: $color-primary;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+    min-width: 4px;
+  }
+
+  &__count {
+    width: 24px;
+    text-align: right;
+    font-size: $font-sm;
+    font-weight: 600;
+    color: $color-text-dark;
+    flex-shrink: 0;
+  }
+}
+
+// ── Recent tickets list ───────────────────────────────────────────────────────
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-sm $space-md;
+  border-radius: $radius-md;
+  background: $color-background;
+  gap: $space-md;
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: $font-md;
+    font-weight: 500;
+    color: $color-text-dark;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    font-size: $font-xs;
+    color: $color-text-muted;
+    text-transform: capitalize;
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    padding: 2px $space-sm;
+    border-radius: $radius-sm;
+    font-size: $font-xs;
+    font-weight: 500;
+    border: 1px solid currentColor;
+
+    &--warning { color: $color-warning; }
+    &--info    { color: $color-info; }
+    &--success { color: $color-success; }
+    &--danger  { color: $color-danger; }
+    &--default { color: $color-text-muted; border-color: $color-border; }
+  }
+}

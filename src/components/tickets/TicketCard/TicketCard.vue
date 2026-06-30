@@ -31,7 +31,22 @@ defineProps({
 
   statusVariant: {
     type: String,
-    default: 'success',
+    default: 'primary',
+  },
+
+  priority: {
+    type: String,
+    default: '',
+  },
+
+  priorityVariant: {
+    type: String,
+    default: 'warning',
+  },
+
+  category: {
+    type: String,
+    default: '',
   },
 })
 
@@ -54,6 +69,15 @@ const emit = defineEmits(['select'])
     <p class="ticket-card__description">
       {{ description }}
     </p>
+
+    <div class="ticket-card__tags">
+      <span :class="['ticket-card__tag', `ticket-card__tag--${priorityVariant}`]">
+        ● {{ priority }}
+      </span>
+      <span class="ticket-card__tag ticket-card__tag--category">
+        {{ category }}
+      </span>
+    </div>
 
     <div class="ticket-card__footer">
       <CalendarDays :size="15" />

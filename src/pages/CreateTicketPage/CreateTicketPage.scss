@@ -10,6 +10,22 @@
     padding: $space-lg;
   }
 
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: $font-md;
+    color: $color-text-light;
+    margin-bottom: $space-lg;
+    padding: 0;
+    transition: $transition-fast;
+
+    &:hover { color: $color-primary; }
+  }
+
   &__body {
     display: grid;
     grid-template-columns: 2fr 350px;
@@ -349,4 +365,14 @@
       }
     }
   }
+}
+
+.ticket-form__error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-bottom: 12px;
 }

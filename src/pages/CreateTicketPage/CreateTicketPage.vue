@@ -1,19 +1,23 @@
 <script setup>
 import './CreateTicketPage.scss'
 
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useSidebar } from '../../composables/useSidebar.js'
-import { Send, ChevronRight, ListChecks, HelpCircle, CheckCircle2, Paperclip, X } from 'lucide-vue-next'
+import { Send, ChevronRight, ListChecks, HelpCircle, CheckCircle2, Paperclip, X, ArrowLeft } from 'lucide-vue-next'
 
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import BaseInput from '../../components/common/BaseInput/BaseInput.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
+import { useAuthStore } from '../../stores/authStore.js'
 
-const router = useRouter()
-const store = useTicketStore()
+const router    = useRouter()
+const store     = useTicketStore()
+const authStore = useAuthStore()
+const { isLoading, error } = storeToRefs(store)
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const subject = ref('')
@@ -48,18 +52,23 @@ const handleCancel = () => {
   router.push('/dashboard')
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!subject.value.trim() || !description.value.trim()) return
+  store.error = null
 
-  store.addTicket({
-    subject: subject.value.trim(),
-    description: description.value.trim(),
-    category: category.value,
-    priority: priority.value,
-    attachment: attachment.value ? attachment.value.name : null,
-  })
-
-  router.push('/dashboard')
+  try {
+    await store.addTicket({
+      subject:     subject.value.trim(),
+      description: description.value.trim(),
+      category:    category.value || 'software',
+      priority:    priority.value,
+      attachment:  attachment.value ? attachment.value.name : null,
+      createdBy:   authStore.username,
+    })
+    router.push('/dashboard')
+  } catch {
+    // error is displayed via store.error binding above the submit button
+  }
 }
 </script>
 
@@ -71,6 +80,11 @@ const handleSubmit = () => {
     <main class="create-ticket-page__content">
 
       <AppHeader @toggle-sidebar="toggleSidebar" />
+
+      <button class="create-ticket-page__back" @click="handleCancel">
+        <ArrowLeft :size="14" />
+        Back To Dashboard
+      </button>
 
       <div class="create-ticket-page__body">
 
@@ -201,6 +215,8 @@ const handleSubmit = () => {
 
           </div>
 
+          <p v-if="error" class="ticket-form__error">{{ error }}</p>
+
           <div class="ticket-form__actions">
 
             <BaseButton
@@ -210,9 +226,9 @@ const handleSubmit = () => {
               cancle
             </BaseButton>
 
-            <BaseButton type="submit">
-              Submit Ticket
-              <Send :size="15" />
+            <BaseButton type="submit" :disabled="isLoading">
+              {{ isLoading ? 'Submitting...' : 'Submit Ticket' }}
+              <Send v-if="!isLoading" :size="15" />
             </BaseButton>
 
           </div>

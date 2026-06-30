@@ -55,11 +55,10 @@ const handleCategoryChange = (event) => {
 
     <select class="ticket-filters__select" @change="handleCategoryChange">
       <option value="All">All Category</option>
-      <option value="IT Support">IT Support</option>
-      <option value="Hardware">Hardware</option>
-      <option value="Software">Software</option>
-      <option value="Network">Network</option>
-      <option value="Account">Account</option>
+      <option value="hardware">Hardware</option>
+      <option value="software">Software</option>
+      <option value="network">Network</option>
+      <option value="account">Account</option>
     </select>
 
     <button

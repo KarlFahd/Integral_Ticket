@@ -1,0 +1,277 @@
+@use "../../styles/variables" as *;
+
+.users-page {
+  display: flex;
+  min-height: 100vh;
+  background: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+    min-width: 0;
+  }
+}
+
+// ── Page header ───────────────────────────────────────────────────────────────
+
+.users-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-lg;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    font-size: $font-md;
+    color: $color-text-light;
+    font-weight: 500;
+  }
+
+  &__add {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    background: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: $radius-md;
+    padding: $space-sm $space-lg;
+    font-size: $font-md;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover { opacity: 0.9; }
+  }
+}
+
+// ── Create user form ──────────────────────────────────────────────────────────
+
+.user-form-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  margin-bottom: $space-lg;
+  border: 2px solid $color-primary;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-lg;
+
+    h3 {
+      margin: 0;
+      font-size: $font-base;
+      font-weight: 700;
+      color: $color-text-dark;
+    }
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: $color-text-muted;
+    display: flex;
+    padding: 4px;
+    border-radius: $radius-sm;
+    transition: $transition-fast;
+
+    &:hover { background: $color-background; color: $color-danger; }
+  }
+}
+
+.user-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-md;
+  margin-bottom: $space-md;
+
+  @media (max-width: #{$bp-md - 1px}) { grid-template-columns: 1fr; }
+}
+
+.user-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: $font-sm;
+    font-weight: 600;
+    color: $color-text-light;
+  }
+
+  input {
+    padding: $space-sm $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: $font-md;
+    color: $color-text-dark;
+    outline: none;
+    font-family: inherit;
+    transition: $transition-fast;
+
+    &:focus { border-color: $color-primary; }
+    &::placeholder { color: $color-text-muted; }
+  }
+}
+
+.user-form-roles {
+  display: flex;
+  gap: $space-md;
+  margin-bottom: $space-md;
+  flex-wrap: wrap;
+}
+
+.role-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  padding: $space-sm $space-md;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  font-size: $font-sm;
+  font-weight: 500;
+  color: $color-text-light;
+  cursor: pointer;
+  transition: $transition-fast;
+  user-select: none;
+
+  input[type="checkbox"] { display: none; }
+
+  &--active {
+    border-color: $color-primary;
+    background: $color-primary-light;
+    color: $color-primary;
+  }
+
+  &:hover { border-color: $color-primary; }
+}
+
+.user-form-error {
+  color: $color-danger;
+  font-size: $font-sm;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: $radius-sm;
+  padding: $space-sm $space-md;
+  margin-bottom: $space-sm;
+}
+
+.user-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+}
+
+.user-form-cancel {
+  padding: $space-sm $space-lg;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-md;
+  cursor: pointer;
+  color: $color-text-light;
+  transition: $transition-fast;
+
+  &:hover { background: $color-background; }
+}
+
+.user-form-submit {
+  padding: $space-sm $space-lg;
+  background: $color-primary;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  &:hover:not(:disabled) { opacity: 0.9; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// ── Users table ───────────────────────────────────────────────────────────────
+
+.users-table-wrap {
+  background: $color-white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    padding: $space-md $space-lg;
+    text-align: left;
+    font-size: $font-sm;
+    font-weight: 600;
+    color: $color-text-muted;
+    background: $color-background;
+    border-bottom: 1px solid $color-border-light;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  td {
+    padding: $space-md $space-lg;
+    font-size: $font-md;
+    color: $color-text-dark;
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: $color-background; }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    font-weight: 500;
+  }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: $color-primary;
+    color: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: $font-sm;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  &__username { color: $color-text-muted; font-size: $font-sm; }
+  &__email    { color: $color-text-light; }
+  &__date     { color: $color-text-muted; font-size: $font-sm; }
+
+  &__empty {
+    text-align: center;
+    color: $color-text-muted;
+    font-style: italic;
+    padding: $space-xl !important;
+  }
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px $space-sm;
+  border-radius: $radius-sm;
+  font-size: $font-xs;
+  font-weight: 600;
+  border: 1px solid currentColor;
+
+  &--admin    { color: $color-primary; }
+  &--hr       { color: $color-info; }
+  &--employee { color: $color-text-muted; border-color: $color-border; }
+}
