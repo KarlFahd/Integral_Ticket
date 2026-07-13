@@ -10,7 +10,6 @@ const routes = [
     component: () => import('../pages/LoginPage.vue'),
   },
 
-  // ── Shared (all logged-in users) ──────────────────────────────────────────
   {
     path: '/overview',
     name: 'Overview',
@@ -29,8 +28,14 @@ const routes = [
     component: () => import('../pages/Setup2FAPage/Setup2FAPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: () => import('../pages/SettingsPage/SettingsPage.vue'),
+    meta: { requiresAuth: true },
+  },
 
-  // ── HR only ───────────────────────────────────────────────────────────────
+  // HR only
   {
     path: '/users',
     name: 'Users',
@@ -44,7 +49,7 @@ const routes = [
     meta: { requiresAuth: true, requiresHr: true },
   },
 
-  // ── Employee ticket pages ─────────────────────────────────────────────────
+  // Employee ticket pages
   {
     path: '/dashboard',
     name: 'Dashboard',
@@ -64,7 +69,7 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: false },
   },
 
-  // ── Agent ticket pages ────────────────────────────────────────────────────
+  // Agent ticket pages
   {
     path: '/agent-dashboard',
     name: 'AgentDashboard',
@@ -87,27 +92,16 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
 
-  if (!to.meta.requiresAuth) {
-    return next()
-  }
+  if (!to.meta.requiresAuth) return next()
+  if (!authStore.isLoggedIn) return next('/login')
 
-  if (!authStore.isLoggedIn) {
-    return next('/login')
-  }
-
-  // HR-only pages (admin also has access)
   if (to.meta.requiresHr && !authStore.isHr && !authStore.isAdmin) {
     return next('/overview')
   }
 
-  // Admin/employee ticket pages
   if ('requiresAdmin' in to.meta) {
-    if (to.meta.requiresAdmin && !authStore.isAdmin) {
-      return next('/overview')
-    }
-    if (!to.meta.requiresAdmin && authStore.isAdmin) {
-      return next('/agent-dashboard')
-    }
+    if (to.meta.requiresAdmin && !authStore.isAdmin) return next('/overview')
+    if (!to.meta.requiresAdmin && authStore.isAdmin) return next('/agent-dashboard')
   }
 
   next()

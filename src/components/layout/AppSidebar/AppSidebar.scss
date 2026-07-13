@@ -5,9 +5,13 @@
   height: 100vh;
   position: sticky;
   top: 0;
+  // `position: sticky` always creates its own stacking context, so without
+  // an explicit z-index here the whole sidebar (tooltip included, no matter
+  // its own z-index) gets capped below AppHeader's stacking context
+  // (also sticky, with z-index: 100) — this has to beat that number.
+  z-index: 101;
   align-self: flex-start;
   flex-shrink: 0;
-  overflow-y: auto;
   background-color: $color-white;
   display: flex;
   flex-direction: column;
@@ -18,6 +22,40 @@
 
   &--collapsed {
     width: $sidebar-width-collapsed;
+
+    .app-sidebar__item {
+      justify-content: center;
+      padding: 0;
+      position: relative;
+
+      &::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #1f2937;
+        color: #fff;
+        font-size: $font-xs;
+        font-weight: 500;
+        white-space: nowrap;
+        padding: 4px 8px;
+        border-radius: $radius-sm;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity $transition-fast;
+        z-index: 1000;
+      }
+
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+
+    .app-sidebar__logo {
+      justify-content: center;
+      padding: 0;
+    }
   }
 
   &__top {
@@ -28,11 +66,35 @@
 
   &__logo {
     display: flex;
+    align-items: center;
     justify-content: center;
+    padding: 0 $space-sm;
+    gap: $space-sm;
 
     img {
       width: 36px;
       height: 36px;
+      flex-shrink: 0;
+    }
+  }
+
+  &__collapse-btn {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: $color-text-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-xs;
+    border-radius: $radius-sm;
+    transition: $transition-fast;
+    flex-shrink: 0;
+
+    &:hover {
+      background: $color-background;
+      color: $color-primary;
     }
   }
 

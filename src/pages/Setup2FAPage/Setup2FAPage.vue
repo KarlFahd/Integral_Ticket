@@ -1,18 +1,17 @@
-<script setup>
+﻿<script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import QRCode from 'qrcode'
-import { useAuthStore } from '../../stores/authStore.js'
-import { authApi } from '../../services/authApi.js'
+import { useSidebar } from '../../composables/useSidebar.js'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
-import { useSidebar } from '../../composables/useSidebar.js'
+import { useAuthStore } from '../../stores/authStore.js'
+import { authApi } from '../../services/authApi.js'
 
 const router    = useRouter()
 const authStore = useAuthStore()
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
-
-// ─── State ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // 'idle' → 'qr' → 'confirm' → 'done' | 'active' (already enabled)
 const step      = ref('idle')
@@ -23,7 +22,7 @@ const error     = ref('')
 const loading   = ref(false)
 const is2faOn   = ref(false)
 
-// ─── On mount: check current status ──────────────────────────────────────────
+// â”€â”€â”€ On mount: check current status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 onMounted(async () => {
   loading.value = true
@@ -37,7 +36,7 @@ onMounted(async () => {
   }
 })
 
-// ─── Actions ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const generateQR = async () => {
   loading.value = true
@@ -94,19 +93,17 @@ const goHome = () => {
 
 <template>
   <div class="setup-2fa-page">
-
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="setup-2fa-page__content">
-
-      <AppHeader title="Security Settings" subtitle="Manage two-factor authentication" @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Two-Factor Authentication" subtitle="Secure your account" @toggle-sidebar="toggleSidebar" />
 
       <div class="s2fa-card">
 
         <!-- Loading -->
         <div v-if="loading && step === 'idle'" class="s2fa-loading">Loading…</div>
 
-        <!-- ── Already active ───────────────────────────────────── -->
+        <!-- â”€â”€ Already active â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <template v-else-if="step === 'active'">
           <div class="s2fa-icon">✅</div>
           <h2 class="s2fa-title">2FA is Active</h2>
@@ -120,7 +117,7 @@ const goHome = () => {
           <button class="s2fa-back" @click="goHome">← Back to dashboard</button>
         </template>
 
-        <!-- ── Idle: not yet set up ─────────────────────────────── -->
+        <!-- â”€â”€ Idle: not yet set up â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <template v-else-if="step === 'idle'">
           <div class="s2fa-icon">🔐</div>
           <h2 class="s2fa-title">Set Up Two-Factor Authentication</h2>
@@ -136,7 +133,7 @@ const goHome = () => {
           <button class="s2fa-back" @click="goHome">← Back to dashboard</button>
         </template>
 
-        <!-- ── QR code: scan it ──────────────────────────────────── -->
+        <!-- â”€â”€ QR code: scan it â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <template v-else-if="step === 'qr'">
           <div class="s2fa-icon">📱</div>
           <h2 class="s2fa-title">Scan This QR Code</h2>
@@ -161,7 +158,7 @@ const goHome = () => {
           <button class="s2fa-back" @click="step = 'idle'">← Start over</button>
         </template>
 
-        <!-- ── Confirm: enter first code ────────────────────────── -->
+        <!-- â”€â”€ Confirm: enter first code â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <template v-else-if="step === 'confirm'">
           <div class="s2fa-icon">🔢</div>
           <h2 class="s2fa-title">Enter the 6-Digit Code</h2>
@@ -193,7 +190,7 @@ const goHome = () => {
           <button class="s2fa-back" @click="step = 'qr'">← Back to QR code</button>
         </template>
 
-        <!-- ── Done ──────────────────────────────────────────────── -->
+        <!-- â”€â”€ Done â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <template v-else-if="step === 'done'">
           <div class="s2fa-icon">🎉</div>
           <h2 class="s2fa-title">2FA Activated!</h2>

@@ -1,9 +1,8 @@
-<script setup>
+﻿<script setup>
 import './TicketDetailPage.scss'
 
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useSidebar } from '../../composables/useSidebar.js'
 import {
   ArrowLeft,
   FileText,
@@ -13,29 +12,31 @@ import {
   ChevronDown,
   ChevronUp,
   Flag,
-  Clock,
-  CircleUserRound,
   Check,
   Search,
 } from 'lucide-vue-next'
 
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import { useSidebar } from '../../composables/useSidebar.js'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
-import { ticketApi } from '../../services/ticketApi.js'
+import { useNotificationStore } from '../../stores/notificationStore.js'
+import { ticketApi, normalizeTicket, normalizeMessage } from '../../services/ticketApi.js'
+import { echo } from '../../echo.js'
+import { useToast } from '../../composables/useToast.js'
 
 const route = useRoute()
 const router = useRouter()
 const store = useTicketStore()
 const authStore = useAuthStore()
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar(true)
+const notificationStore = useNotificationStore()
+const toast = useToast()
+const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const ticket = ref(null)
 const messages = ref([])
 const messagesContainer = ref(null)
-let pollInterval = null
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -54,16 +55,36 @@ const loadMessages = async () => {
 onMounted(async () => {
   ticket.value = await store.fetchTicket(Number(route.params.id))
   await loadMessages()
-  pollInterval = setInterval(loadMessages, 4000)
+  notificationStore.setActiveTicket(ticket.value.id)
+
+  // Real-time: agent replies push here instantly (sender excluded via X-Socket-ID)
+  echo.channel(`ticket.${ticket.value.id}`)
+    .listen('.message.sent', (data) => {
+      messages.value.push(normalizeMessage(data.message))
+      scrollToBottom()
+    })
+
+  // Real-time: ticket status/priority changed by agent
+  echo.channel('tickets')
+    .listen('.ticket.updated', (data) => {
+      if (data.ticket.id === ticket.value.id) {
+        ticket.value = normalizeTicket(data.ticket)
+        toast.info(`Your ticket status changed to "${data.ticket.status}".`)
+      }
+    })
 })
 
 onUnmounted(() => {
-  clearInterval(pollInterval)
+  if (ticket.value) {
+    echo.leave(`ticket.${ticket.value.id}`)
+  }
+  echo.leave('tickets')
+  notificationStore.clearActiveTicket()
 })
 
 const goBack = () => router.push('/dashboard')
 
-// ─── Conversation ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const message     = ref('')
 const searchQuery = ref('')
@@ -89,17 +110,23 @@ watch(searchQuery, (q) => { if (!q) scrollToBottom() })
 
 const handleSend = async () => {
   if (!message.value.trim()) return
-  const sent = await ticketApi.sendMessage(ticket.value.id, {
-    sender:  authStore.username,
-    isAgent: false,
-    message: message.value.trim(),
-  })
-  messages.value.push(sent)
-  message.value = ''
-  scrollToBottom()
+  const text = message.value.trim()
+  message.value = '' // clear immediately so it feels instant
+  try {
+    const sent = await ticketApi.sendMessage(
+      ticket.value.id,
+      { sender: authStore.username, isAgent: false, message: text },
+      echo.socketId() // tells server: don't echo back to me
+    )
+    messages.value.push(sent)
+    scrollToBottom()
+  } catch {
+    message.value = text // restore on failure
+    toast.error('Message could not be sent. Please try again.')
+  }
 }
 
-// ─── Progress Timeline ────────────────────────────────────────────────────────
+// â”€â”€â”€ Progress Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const TIMELINE_STEPS = ['Submitted', 'Under Review', 'In Progress', 'Resolved']
 
@@ -120,7 +147,7 @@ const stepStatus = (index) => {
   return 'pending'
 }
 
-// ─── Actions Accordion ────────────────────────────────────────────────────────
+// â”€â”€â”€ Actions Accordion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const openAction = ref(null)
 
@@ -128,14 +155,8 @@ const toggleAction = (key) => {
   openAction.value = openAction.value === key ? null : key
 }
 
-const PRIORITY_OPTIONS = [
-  { label: 'Low',    value: 'low',    variant: 'success' },
-  { label: 'Medium', value: 'medium', variant: 'warning' },
-  { label: 'High',   value: 'high',   variant: 'danger'  },
-]
-
-const handleUpdatePriority = async (newPriority) => {
-  const updated = await store.updateTicketPriority(ticket.value.id, newPriority)
+const handleCloseTicket = async () => {
+  const updated = await store.updateTicketStatus(ticket.value.id, 'Resolved')
   if (updated) ticket.value = updated
   openAction.value = null
 }
@@ -143,23 +164,21 @@ const handleUpdatePriority = async (newPriority) => {
 
 <template>
   <div class="ticket-detail-page">
-
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="ticket-detail-page__content">
-
-      <AppHeader @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Ticket Details" subtitle="View and respond to your ticket" @toggle-sidebar="toggleSidebar" />
 
       <div v-if="ticket">
 
         <button class="ticket-detail-page__back" @click="goBack">
           <ArrowLeft :size="14" />
-          Back To Ticket
+          Back to tickets
         </button>
 
         <div class="ticket-detail-page__body">
 
-          <!-- ─── LEFT COLUMN ─────────────────────────────────────── -->
+          <!-- â”€â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
           <div class="ticket-detail-page__main">
 
             <!-- Ticket Summary Card -->
@@ -183,7 +202,7 @@ const handleUpdatePriority = async (newPriority) => {
                     </span>
 
                     <span :class="['ticket-summary__tag', `ticket-summary__tag--${ticket.priorityVariant}`]">
-                      ● {{ ticket.priority }}
+                      {{ ticket.priority }}
                     </span>
 
                     <span class="ticket-summary__tag ticket-summary__tag--default">
@@ -282,7 +301,7 @@ const handleUpdatePriority = async (newPriority) => {
 
           </div>
 
-          <!-- ─── RIGHT COLUMN ───────────────────────────────────── -->
+          <!-- â”€â”€â”€ RIGHT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
           <div class="ticket-detail-page__aside">
 
             <!-- Ticket Information -->
@@ -302,7 +321,7 @@ const handleUpdatePriority = async (newPriority) => {
                 <div class="info-card__row">
                   <span class="info-card__label">Priority</span>
                   <span :class="['info-card__badge info-card__badge--outlined', `info-card__badge--${ticket.priorityVariant}`]">
-                    ● {{ ticket.priority }}
+                    {{ ticket.priority }}
                   </span>
                 </div>
 
@@ -361,46 +380,25 @@ const handleUpdatePriority = async (newPriority) => {
 
             </div>
 
-            <!-- Actions -->
+            <!-- Actions — client can only close the ticket -->
             <div class="actions-card">
 
               <h3 class="actions-card__title">Actions</h3>
 
-              <!-- Change Priority -->
-              <div class="actions-item">
-                <button class="actions-item__header" @click="toggleAction('priority')">
+              <div class="actions-item actions-item--danger">
+                <button class="actions-item__header" @click="toggleAction('close')">
                   <div class="actions-item__left">
                     <Flag :size="15" />
-                    <span>Change Priority</span>
+                    <span>Close Ticket</span>
                   </div>
-                  <component :is="openAction === 'priority' ? ChevronUp : ChevronDown" :size="15" />
+                  <component :is="openAction === 'close' ? ChevronUp : ChevronDown" :size="15" />
                 </button>
 
-                <div v-if="openAction === 'priority'" class="actions-item__content">
-                  <button
-                    v-for="opt in PRIORITY_OPTIONS"
-                    :key="opt.value"
-                    :class="['status-option', `status-option--${opt.variant}`]"
-                    @click="handleUpdatePriority(opt.value)"
-                  >
-                    {{ opt.label }}
+                <div v-if="openAction === 'close'" class="actions-item__content">
+                  <p class="actions-item__confirm-text">Are you sure you want to close this ticket?</p>
+                  <button class="actions-item__confirm-btn" @click="handleCloseTicket">
+                    Yes, Close Ticket
                   </button>
-                </div>
-              </div>
-
-              <!-- Add Note -->
-              <div class="actions-item">
-                <button class="actions-item__header" @click="toggleAction('note')">
-                  <div class="actions-item__left">
-                    <Clock :size="15" />
-                    <span>Add note</span>
-                  </div>
-                  <component :is="openAction === 'note' ? ChevronUp : ChevronDown" :size="15" />
-                </button>
-
-                <div v-if="openAction === 'note'" class="actions-item__content">
-                  <textarea class="actions-item__textarea" placeholder="Write a note..."></textarea>
-                  <button class="actions-item__save">Save Note</button>
                 </div>
               </div>
 

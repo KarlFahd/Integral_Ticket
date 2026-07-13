@@ -1,9 +1,21 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authApi } from '../services/authApi.js'
+import { useNotificationStore } from './notificationStore.js'
+
+const STORAGE_KEY = 'auth_user'
+
+function loadStoredUser() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
 
 export const useAuthStore = defineStore('auth', () => {
-  const user        = ref(null)
+  const user        = ref(loadStoredUser())
   const isLoading   = ref(false)
   const error       = ref(null)
 
@@ -27,6 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
       } else {
         user.value               = result.user
         pending2faUsername.value = null
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user.value))
       }
     } catch (e) {
       error.value = 'Invalid username or password.'
@@ -43,6 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
       const loggedInUser       = await authApi.verify2fa(pending2faUsername.value, code)
       user.value               = loggedInUser
       pending2faUsername.value = null
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user.value))
     } catch (e) {
       error.value = 'Invalid authenticator code. Please try again.'
       throw e
@@ -55,6 +69,8 @@ export const useAuthStore = defineStore('auth', () => {
     user.value               = null
     error.value              = null
     pending2faUsername.value = null
+    localStorage.removeItem(STORAGE_KEY)
+    useNotificationStore().reset()
   }
 
   return {

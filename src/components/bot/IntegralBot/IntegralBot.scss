@@ -1,0 +1,175 @@
+@use "../../../styles/variables" as *;
+
+.integral-bot {
+  position: fixed;
+  right: $space-lg;
+  bottom: $space-lg;
+  width: 360px;
+  height: 480px;
+  max-height: calc(100vh - #{$space-xl});
+  background-color: $color-white;
+  border: 1px solid $color-border-light;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1100;
+
+  @media (max-width: #{$bp-sm}) {
+    right: $space-sm;
+    left: $space-sm;
+    bottom: $space-sm;
+    width: auto;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-sm $space-md;
+    background-color: $color-primary;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    font-size: $font-md;
+    font-weight: 600;
+  }
+
+  &__close {
+    border: none;
+    background: transparent;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: $space-xs;
+    border-radius: $radius-sm;
+    transition: $transition-fast;
+    opacity: 0.85;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    padding: $space-md;
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+    background-color: $color-background;
+  }
+
+  &__bubble {
+    max-width: 85%;
+    padding: $space-sm $space-md;
+    border-radius: $radius-lg;
+    font-size: $font-sm;
+    line-height: 1.45;
+    white-space: pre-line;
+    word-break: break-word;
+
+    &--user {
+      align-self: flex-end;
+      background-color: $color-primary;
+      color: #fff;
+      border-bottom-right-radius: $radius-sm;
+    }
+
+    &--assistant {
+      align-self: flex-start;
+      background-color: $color-panel;
+      color: $color-text-dark;
+      border: 1px solid $color-border-light;
+      border-bottom-left-radius: $radius-sm;
+    }
+  }
+
+  &__typing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: $space-md;
+
+    span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: $color-text-muted;
+      animation: integral-bot-bounce 1.2s infinite ease-in-out;
+
+      &:nth-child(2) { animation-delay: 0.15s; }
+      &:nth-child(3) { animation-delay: 0.3s; }
+    }
+  }
+
+  &__input-row {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    padding: $space-sm;
+    border-top: 1px solid $color-border-light;
+    background-color: $color-white;
+    flex-shrink: 0;
+  }
+
+  &__input {
+    flex: 1;
+    height: 38px;
+    padding: 0 $space-sm;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background-color: $color-background;
+    color: $color-text-dark;
+    font-size: $font-sm;
+    outline: none;
+    transition: $transition-fast;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  &__send {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: $radius-md;
+    background-color: $color-primary;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes integral-bot-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}

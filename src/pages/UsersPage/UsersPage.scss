@@ -195,12 +195,41 @@
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
+// ── Search ────────────────────────────────────────────────────────────────────
+
+.users-search {
+  background: $color-white;
+  border: 1px solid $color-border-medium;
+  border-radius: $radius-md;
+  height: $height-button;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 $space-md;
+  color: $color-text-light;
+  margin-bottom: $space-lg;
+
+  input {
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    font-size: $font-md;
+  }
+}
+
 // ── Users table ───────────────────────────────────────────────────────────────
 
 .users-table-wrap {
   background: $color-white;
   border-radius: $radius-lg;
   overflow: hidden;
+
+  &--skeleton {
+    display: flex;
+    flex-direction: column;
+    padding: $space-sm 0;
+  }
 }
 
 .users-table {

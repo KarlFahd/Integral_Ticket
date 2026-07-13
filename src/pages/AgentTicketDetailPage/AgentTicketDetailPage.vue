@@ -1,10 +1,9 @@
-<script setup>
+﻿<script setup>
 import '../TicketDetailPage/TicketDetailPage.scss'
 import './AgentTicketDetailPage.scss'
 
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useSidebar } from '../../composables/useSidebar.js'
 import {
   ArrowLeft,
   FileText,
@@ -16,28 +15,31 @@ import {
   RefreshCw,
   Clock,
   Trash2,
-  CircleUserRound,
   Check,
   Search,
 } from 'lucide-vue-next'
 
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import { useSidebar } from '../../composables/useSidebar.js'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
-import { ticketApi } from '../../services/ticketApi.js'
+import { useNotificationStore } from '../../stores/notificationStore.js'
+import { ticketApi, normalizeMessage } from '../../services/ticketApi.js'
+import { echo } from '../../echo.js'
+import { useToast } from '../../composables/useToast.js'
 
 const route = useRoute()
 const router = useRouter()
 const store = useTicketStore()
 const authStore = useAuthStore()
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar(true)
+const notificationStore = useNotificationStore()
+const toast = useToast()
+const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const ticket = ref(null)
 const messages = ref([])
 const messagesContainer = ref(null)
-let pollInterval = null
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -56,18 +58,30 @@ const loadMessages = async () => {
 onMounted(async () => {
   ticket.value = await store.fetchTicket(Number(route.params.id))
   await loadMessages()
-  pollInterval = setInterval(loadMessages, 4000)
+  notificationStore.setActiveTicket(ticket.value.id)
+
+  // Real-time: employee replies push here instantly (sender excluded via X-Socket-ID)
+  echo.channel(`ticket.${ticket.value.id}`)
+    .listen('.message.sent', (data) => {
+      const normalized = normalizeMessage(data.message)
+      messages.value.push(normalized)
+      scrollToBottom()
+      toast.info(`New message from ${normalized.sender}.`)
+    })
 })
 
 onUnmounted(() => {
-  clearInterval(pollInterval)
+  if (ticket.value) {
+    echo.leave(`ticket.${ticket.value.id}`)
+  }
+  notificationStore.clearActiveTicket()
 })
 
 const clientName = computed(() => ticket.value?.createdBy || 'Employee')
 
 const goBack = () => router.push('/agent-dashboard')
 
-// ─── Conversation ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Conversation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const message     = ref('')
 const searchQuery = ref('')
@@ -92,17 +106,23 @@ watch(searchQuery, (q) => { if (!q) scrollToBottom() })
 
 const handleSend = async () => {
   if (!message.value.trim()) return
-  const sent = await ticketApi.sendMessage(ticket.value.id, {
-    sender:  authStore.username,
-    isAgent: true,
-    message: message.value.trim(),
-  })
-  messages.value.push(sent)
+  const text = message.value.trim()
   message.value = ''
-  scrollToBottom()
+  try {
+    const sent = await ticketApi.sendMessage(
+      ticket.value.id,
+      { sender: authStore.username, isAgent: true, message: text },
+      echo.socketId()
+    )
+    messages.value.push(sent)
+    scrollToBottom()
+  } catch {
+    message.value = text
+    toast.error('Message could not be sent. Please try again.')
+  }
 }
 
-// ─── Progress Timeline ────────────────────────────────────────────────────────
+// â”€â”€â”€ Progress Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const TIMELINE_STEPS = ['Submitted', 'Under Review', 'In Progress', 'Resolved']
 
@@ -123,7 +143,7 @@ const stepStatus = (index) => {
   return 'pending'
 }
 
-// ─── Actions Accordion ────────────────────────────────────────────────────────
+// â”€â”€â”€ Actions Accordion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const openAction = ref(null)
 
@@ -143,28 +163,27 @@ const handleUpdateStatus = async (newStatus) => {
   const updated = await store.updateTicketStatus(ticket.value.id, newStatus)
   if (updated) ticket.value = updated
   openAction.value = null
+  // toast is handled in ticketStore
 }
 </script>
 
 <template>
   <div class="agent-ticket-page">
-
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="agent-ticket-page__content">
-
-      <AppHeader title="Support Dashboard" subtitle="Manage and resolve support ticket" @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Ticket Details" subtitle="Review and respond to this ticket" @toggle-sidebar="toggleSidebar" />
 
       <div v-if="ticket">
 
         <button class="ticket-detail-page__back" @click="goBack">
           <ArrowLeft :size="14" />
-          Back To Ticket
+          Back to tickets
         </button>
 
         <div class="ticket-detail-page__body">
 
-          <!-- ─── LEFT COLUMN ──────────────────────────────────────── -->
+          <!-- â”€â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
           <div class="ticket-detail-page__main">
 
             <!-- Ticket Summary Card -->
@@ -188,7 +207,7 @@ const handleUpdateStatus = async (newStatus) => {
                     </span>
 
                     <span :class="['ticket-summary__tag', `ticket-summary__tag--${ticket.priorityVariant}`]">
-                      ● {{ ticket.priority }}
+                      {{ ticket.priority }}
                     </span>
 
                     <span class="ticket-summary__tag ticket-summary__tag--default">
@@ -287,7 +306,7 @@ const handleUpdateStatus = async (newStatus) => {
 
           </div>
 
-          <!-- ─── RIGHT COLUMN ─────────────────────────────────────── -->
+          <!-- â”€â”€â”€ RIGHT COLUMN â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
           <div class="ticket-detail-page__aside">
 
             <!-- Ticket Information -->
@@ -307,7 +326,7 @@ const handleUpdateStatus = async (newStatus) => {
                 <div class="info-card__row">
                   <span class="info-card__label">Priority</span>
                   <span :class="['info-card__badge info-card__badge--outlined', `info-card__badge--${ticket.priorityVariant}`]">
-                    ● {{ ticket.priority }}
+                    {{ ticket.priority }}
                   </span>
                 </div>
 

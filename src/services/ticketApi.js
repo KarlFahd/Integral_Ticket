@@ -15,18 +15,18 @@ const STATUS_VARIANTS = {
 }
 
 const PRIORITY_VARIANTS = {
-  low:    'success',
-  medium: 'warning',
-  high:   'danger',
+  Low:    'success',
+  Medium: 'warning',
+  High:   'danger',
 }
 
 function formatDate(isoString) {
   if (!isoString) return ''
   const d = new Date(isoString)
-  const month = String(d.getMonth() + 1).padStart(2, '0')
   const day   = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
   const year  = d.getFullYear()
-  return `${month}/${day}/${year}`
+  return `${day}-${month}-${year}`
 }
 
 function formatDateTime(isoString) {
@@ -39,7 +39,7 @@ function formatDateTime(isoString) {
   )
 }
 
-function normalizeMessage(raw) {
+export function normalizeMessage(raw) {
   return {
     id:      raw.id,
     sender:  raw.sender,
@@ -51,7 +51,6 @@ function normalizeMessage(raw) {
 }
 
 export function normalizeTicket(raw) {
-  const priority = raw.priority?.toLowerCase() ?? 'low'
   return {
     id:             raw.id,
     title:          raw.title,
@@ -59,8 +58,8 @@ export function normalizeTicket(raw) {
     date:           formatDate(raw.created_at),
     status:         raw.status,
     statusVariant:  STATUS_VARIANTS[raw.status] ?? 'primary',
-    priority:       priority.charAt(0).toUpperCase() + priority.slice(1),
-    priorityVariant: PRIORITY_VARIANTS[priority] ?? 'warning',
+    priority:       raw.priority,
+    priorityVariant: PRIORITY_VARIANTS[raw.priority] ?? 'warning',
     category:       raw.category,
     createdBy:      raw.created_by,
     ticketId:       String(raw.id),
@@ -100,12 +99,13 @@ export const ticketApi = {
     return data.data.map(normalizeMessage)
   },
 
-  async sendMessage(ticketId, { sender, isAgent, message }) {
-    const { data } = await http.post(`/tickets/${ticketId}/messages`, {
-      sender,
-      is_agent: isAgent,
-      message,
-    })
+  async sendMessage(ticketId, { sender, isAgent, message }, socketId = null) {
+    const headers = socketId ? { 'X-Socket-ID': socketId } : {}
+    const { data } = await http.post(
+      `/tickets/${ticketId}/messages`,
+      { sender, is_agent: isAgent, message },
+      { headers }
+    )
     return normalizeMessage(data.data)
   },
 }

@@ -44,6 +44,29 @@
     text-overflow: ellipsis;
   }
 
+  &__clear {
+    flex-shrink: 0;
+    height: $height-button;
+    padding: 0 $space-md;
+    border: 1px solid $color-border-medium;
+    border-radius: $radius-md;
+    background: $color-white;
+    color: $color-text-light;
+    font-size: $font-md;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    transition: $transition-fast;
+
+    &:hover {
+      border-color: $color-danger;
+      color: $color-danger;
+    }
+  }
+
   &__create {
     flex-shrink: 0;
     height: $height-button;

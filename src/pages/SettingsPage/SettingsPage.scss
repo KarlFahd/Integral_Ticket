@@ -1,0 +1,128 @@
+@use "../../styles/variables" as *;
+
+.settings-page {
+  display: flex;
+  min-height: 100vh;
+  background: $color-background;
+
+  &__content {
+    flex: 1;
+    padding: $space-lg;
+    min-width: 0;
+    max-width: 640px;
+  }
+}
+
+.settings-section {
+  margin-bottom: $space-lg;
+
+  &__title {
+    margin: 0 0 $space-sm 4px;
+    font-size: $font-sm;
+    font-weight: 600;
+    color: $color-text-light;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+}
+
+.settings-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  box-shadow: $shadow-sm;
+  padding: $space-md $space-lg;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-xs 0;
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: $radius-md;
+    background: $color-primary-light;
+    color: $color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: $font-md;
+    font-weight: 600;
+    color: $color-text-dark;
+  }
+
+  &__hint {
+    font-size: $font-sm;
+    color: $color-text-muted;
+  }
+}
+
+// ── Toggle switch ─────────────────────────────────────────────────────────────
+.theme-toggle {
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  background: $color-border-medium;
+  cursor: pointer;
+  position: relative;
+  transition: background $transition-fast;
+
+  &__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: $color-white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform $transition-fast;
+  }
+
+  &--on {
+    background: $color-primary;
+
+    .theme-toggle__thumb {
+      transform: translateX(18px);
+    }
+  }
+}
+
+.settings-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  width: 100%;
+  margin-top: $space-md;
+  padding: $space-sm;
+  border: 1px solid $color-danger;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-danger;
+  font-size: $font-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  &:hover {
+    background: rgba(235, 87, 87, 0.08);
+  }
+}

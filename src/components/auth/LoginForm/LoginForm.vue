@@ -88,11 +88,11 @@ watch(otpCode, (val) => {
           {{ isLoading ? 'Signing in...' : 'Sign In' }}
         </BaseButton>
 
-        <div class="login-form__separator">or continue with</div>
+        <div class="login-form__separator">or</div>
 
         <button type="button" class="login-form__google-button">
           <img :src="googleLogo" alt="Google" />
-          <span>Sign In with Google</span>
+          <span>Google</span>
         </button>
       </form>
     </template>

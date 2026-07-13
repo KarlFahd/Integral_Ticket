@@ -1,24 +1,48 @@
 <script setup>
 import './TicketFilters.scss'
+import { ref, computed } from 'vue'
+import { Search, X } from 'lucide-vue-next'
 
-import { Search } from 'lucide-vue-next'
+const emit = defineEmits(['search', 'status-change', 'priority-change', 'category-change', 'create-ticket', 'clear-filters'])
 
-const emit = defineEmits(['search', 'status-change', 'priority-change', 'category-change', 'create-ticket'])
+const searchText     = ref('')
+const selectedStatus   = ref('All')
+const selectedPriority = ref('All')
+const selectedCategory = ref('All')
 
-const handleSearch = (event) => {
-  emit('search', event.target.value)
+const hasActiveFilters = computed(() =>
+  searchText.value !== '' ||
+  selectedStatus.value !== 'All' ||
+  selectedPriority.value !== 'All' ||
+  selectedCategory.value !== 'All'
+)
+
+const onSearch = (e) => {
+  searchText.value = e.target.value
+  emit('search', searchText.value)
 }
 
-const handleStatusChange = (event) => {
-  emit('status-change', event.target.value)
+const onStatusChange = (e) => {
+  selectedStatus.value = e.target.value
+  emit('status-change', e.target.value)
 }
 
-const handlePriorityChange = (event) => {
-  emit('priority-change', event.target.value)
+const onPriorityChange = (e) => {
+  selectedPriority.value = e.target.value
+  emit('priority-change', e.target.value)
 }
 
-const handleCategoryChange = (event) => {
-  emit('category-change', event.target.value)
+const onCategoryChange = (e) => {
+  selectedCategory.value = e.target.value
+  emit('category-change', e.target.value)
+}
+
+const clearFilters = () => {
+  searchText.value     = ''
+  selectedStatus.value   = 'All'
+  selectedPriority.value = 'All'
+  selectedCategory.value = 'All'
+  emit('clear-filters')
 }
 </script>
 
@@ -26,18 +50,16 @@ const handleCategoryChange = (event) => {
   <div class="ticket-filters">
 
     <div class="ticket-filters__search">
-
       <Search :size="18" />
-
       <input
+        :value="searchText"
         type="text"
-        placeholder="Search Ticket..."
-        @input="handleSearch"
+        placeholder="Search ticket..."
+        @input="onSearch"
       />
-
     </div>
 
-    <select class="ticket-filters__select" @change="handleStatusChange">
+    <select class="ticket-filters__select" :value="selectedStatus" @change="onStatusChange">
       <option value="All">All Status</option>
       <option value="Open">Open</option>
       <option value="Pending">Pending</option>
@@ -46,26 +68,35 @@ const handleCategoryChange = (event) => {
       <option value="Rejected">Rejected</option>
     </select>
 
-    <select class="ticket-filters__select" @change="handlePriorityChange">
+    <select class="ticket-filters__select" :value="selectedPriority" @change="onPriorityChange">
       <option value="All">All Priority</option>
-      <option value="low">Low</option>
-      <option value="medium">Medium</option>
-      <option value="high">High</option>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
     </select>
 
-    <select class="ticket-filters__select" @change="handleCategoryChange">
+    <select class="ticket-filters__select" :value="selectedCategory" @change="onCategoryChange">
       <option value="All">All Category</option>
-      <option value="hardware">Hardware</option>
-      <option value="software">Software</option>
-      <option value="network">Network</option>
-      <option value="account">Account</option>
+      <option value="Hardware">Hardware</option>
+      <option value="Software">Software</option>
+      <option value="Network">Network</option>
+      <option value="Account">Account</option>
     </select>
+
+    <button
+      v-if="hasActiveFilters"
+      class="ticket-filters__clear"
+      @click="clearFilters"
+    >
+      <X :size="14" />
+      Clear
+    </button>
 
     <button
       class="ticket-filters__create"
       @click="emit('create-ticket')"
     >
-      + Create Ticket
+      + Add Ticket
     </button>
 
   </div>

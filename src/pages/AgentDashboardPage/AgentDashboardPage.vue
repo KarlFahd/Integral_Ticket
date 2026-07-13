@@ -1,10 +1,10 @@
-<script setup>
+﻿<script setup>
 import './AgentDashboardPage.scss'
 
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
 import { useSidebar } from '../../composables/useSidebar.js'
+import { storeToRefs } from 'pinia'
 import {
   TicketIcon,
   Clock,
@@ -12,32 +12,47 @@ import {
   CheckCircle2,
   Search,
   Download,
-  MoreVertical,
   CircleUserRound,
+  TicketX,
+  X,
 } from 'lucide-vue-next'
 
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
 
 const router = useRouter()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const goToTicket = (id) => {
   router.push('/agent-ticket/' + id)
 }
 
 const store = useTicketStore()
-const { tickets, openCount, pendingCount, inProgressCount, resolvedCount } = storeToRefs(store)
+const { tickets, isLoading, openCount, pendingCount, inProgressCount, resolvedCount } = storeToRefs(store)
 
 onMounted(() => store.fetchTickets())
 
-// ─── Filters ──────────────────────────────────────────────────────────────────
+const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
-const searchQuery = ref('')
-const filterStatus = ref('')
+// â”€â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+const searchQuery    = ref('')
+const filterStatus   = ref('')
 const filterPriority = ref('')
 const filterCategory = ref('')
+
+const clearFilters = () => {
+  searchQuery.value    = ''
+  filterStatus.value   = ''
+  filterPriority.value = ''
+  filterCategory.value = ''
+}
+
+const hasActiveFilters = computed(() =>
+  searchQuery.value !== '' || filterStatus.value !== '' ||
+  filterPriority.value !== '' || filterCategory.value !== ''
+)
 
 const filteredTickets = computed(() => {
   return tickets.value.filter(t => {
@@ -46,14 +61,14 @@ const filteredTickets = computed(() => {
       t.createdBy.toLowerCase().includes(searchQuery.value.toLowerCase())
 
     const matchStatus = !filterStatus.value || t.status === filterStatus.value
-    const matchPriority = !filterPriority.value || t.priority.toLowerCase() === filterPriority.value
+    const matchPriority = !filterPriority.value || t.priority === filterPriority.value
     const matchCategory = !filterCategory.value || t.category === filterCategory.value
 
     return matchSearch && matchStatus && matchPriority && matchCategory
   })
 })
 
-// ─── Category stats for pie chart ─────────────────────────────────────────────
+// â”€â”€â”€ Category stats for pie chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const categoryStats = computed(() => {
   const counts = {}
@@ -73,18 +88,16 @@ const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#10B981', '#EF4444']
 
 <template>
   <div class="agent-dashboard">
-
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="agent-dashboard__content">
-
-      <AppHeader title="Support Dashboard" subtitle="Manage and resolve support ticket" @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Support Dashboard" subtitle="Manage and resolve support tickets" @toggle-sidebar="toggleSidebar" />
 
       <div class="agent-dashboard__inner">
 
         <div class="agent-dashboard__body">
 
-          <!-- ─── LEFT: stats + table ──────────────────────────────────── -->
+          <!-- â”€â”€â”€ LEFT: stats + table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
           <div class="agent-dashboard__main">
 
             <!-- Stat Cards -->
@@ -159,22 +172,31 @@ const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#10B981', '#EF4444']
 
               <select v-model="filterPriority" class="agent-filters__select">
                 <option value="">All Priority</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
               </select>
 
               <select v-model="filterCategory" class="agent-filters__select">
                 <option value="">All Category</option>
-                <option value="hardware">Hardware</option>
-                <option value="software">Software</option>
-                <option value="network">Network</option>
-                <option value="account">Account</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Network">Network</option>
+                <option value="Account">Account</option>
               </select>
+
+              <button
+                v-if="hasActiveFilters"
+                class="agent-filters__clear"
+                @click="clearFilters"
+              >
+                <X :size="14" />
+                Clear
+              </button>
 
               <button class="agent-filters__export">
                 <Download :size="15" />
-                +Export
+                Export
               </button>
 
             </div>
@@ -191,57 +213,68 @@ const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#10B981', '#EF4444']
                     <th>Status</th>
                     <th>Assigned To</th>
                     <th>Created On</th>
-                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="ticket in filteredTickets" :key="ticket.id" class="agent-table__row" @click="goToTicket(ticket.id)">
+                  <!-- Skeleton rows while loading -->
+                  <template v-if="isLoading">
+                    <tr v-for="i in 6" :key="'sk-' + i" class="agent-table__row agent-table__row--skeleton">
+                      <td colspan="7">
+                        <SkeletonLoader variant="row" />
+                      </td>
+                    </tr>
+                  </template>
 
+                  <!-- Real rows -->
+                  <tr
+                    v-else-if="filteredTickets.length > 0"
+                    v-for="ticket in filteredTickets"
+                    :key="ticket.id"
+                    class="agent-table__row"
+                    @click="goToTicket(ticket.id)"
+                  >
                     <td>
                       <span class="agent-table__ticket-id">#TK-{{ ticket.id }}</span>
                     </td>
-
                     <td>
                       <div class="agent-table__employee">
                         <CircleUserRound :size="28" class="agent-table__avatar" />
                         <div>
                           <div class="agent-table__name">{{ ticket.createdBy }}</div>
-                          <div class="agent-table__email">karl.fahed.95@gmail.com</div>
+                          <div class="agent-table__email">support@integrachip.com</div>
                         </div>
                       </div>
                     </td>
-
                     <td>
                       <span class="agent-table__category">{{ ticket.category }}</span>
                     </td>
-
                     <td>
                       <span :class="['agent-table__priority', `agent-table__priority--${ticket.priorityVariant}`]">
-                        ● {{ ticket.priority }}
+                        {{ ticket.priority }}
                       </span>
                     </td>
-
                     <td>
                       <span :class="['agent-table__status', `agent-table__status--${ticket.statusVariant}`]">
                         {{ ticket.status }}
                       </span>
                     </td>
-
                     <td>
                       <div class="agent-table__assigned">
                         <CircleUserRound :size="20" class="agent-table__avatar agent-table__avatar--sm" />
-                        Sarah Azar
+                        Support Team
                       </div>
                     </td>
-
                     <td class="agent-table__date">{{ ticket.date }}</td>
+                  </tr>
 
-                    <td>
-                      <button class="agent-table__action">
-                        <MoreVertical :size="16" />
-                      </button>
+                  <!-- Empty state row -->
+                  <tr v-else>
+                    <td colspan="7">
+                      <div class="agent-table__empty">
+                        <TicketX :size="40" />
+                        <p>No tickets found. Adjust your filters or wait for new submissions.</p>
+                      </div>
                     </td>
-
                   </tr>
                 </tbody>
               </table>
@@ -258,7 +291,7 @@ const PIE_COLORS = ['#7C3AED', '#3B82F6', '#F59E0B', '#10B981', '#EF4444']
 
           </div>
 
-          <!-- ─── RIGHT: sidebar panels ────────────────────────────────── -->
+          <!-- â”€â”€â”€ RIGHT: sidebar panels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
           <div class="agent-dashboard__aside">
 
             <!-- Quick Status -->

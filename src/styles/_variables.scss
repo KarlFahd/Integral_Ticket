@@ -10,20 +10,20 @@ $color-warning:        #f2994a;
 $color-danger:         #eb5757;
 $color-info:           #4f6cff;
 
-// Neutrals
-$color-white:          #ffffff;
-$color-background:     #f5f5f5;
-$color-panel:          #f2f2f2;
+// Neutrals — themeable, see styles/theme.css for light/dark values
+$color-white:          var(--color-white);
+$color-background:     var(--color-background);
+$color-panel:          var(--color-panel);
 
 // Text
-$color-text-dark:      #1e1e1e;
-$color-text-light:     #6b6b6b;
-$color-text-muted:     #888888;
+$color-text-dark:      var(--color-text-dark);
+$color-text-light:     var(--color-text-light);
+$color-text-muted:     var(--color-text-muted);
 
 // Borders
-$color-border:         #dcdcdc;
-$color-border-light:   #ececec;
-$color-border-medium:  #e5e5e5;
+$color-border:         var(--color-border);
+$color-border-light:   var(--color-border-light);
+$color-border-medium:  var(--color-border-medium);
 
 
 // ─── Spacing ──────────────────────────────────────────────────────────────────
@@ -65,8 +65,8 @@ $sidebar-width-collapsed:  72px;
 
 // ─── Shadows ──────────────────────────────────────────────────────────────────
 
-$shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.05);
-$shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10);
+$shadow-sm:  0 2px 8px var(--shadow-color-sm);
+$shadow-md:  0 4px 16px var(--shadow-color-md);
 
 
 // ─── Transitions ──────────────────────────────────────────────────────────────

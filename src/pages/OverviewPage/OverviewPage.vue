@@ -1,27 +1,30 @@
-<script setup>
+﻿<script setup>
 import './OverviewPage.scss'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useSidebar } from '../../composables/useSidebar.js'
 import { Ticket, CheckCircle2, Clock, AlertCircle, Plus, ArrowRight } from 'lucide-vue-next'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader  from '../../components/layout/AppHeader/AppHeader.vue'
-import { useSidebar } from '../../composables/useSidebar.js'
+import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore }   from '../../stores/authStore.js'
+import { storeToRefs }    from 'pinia'
 
 const router    = useRouter()
 const store     = useTicketStore()
 const authStore = useAuthStore()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
-
+const { isLoading } = storeToRefs(store)
 onMounted(() => store.fetchTickets())
+
+const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const allTickets = computed(() => store.tickets ?? [])
 
 const myTickets = computed(() =>
   authStore.isAdmin
     ? allTickets.value
-    : allTickets.value.filter(t => t.createdBy === authStore.username)
+    : allTickets.value.filter(t => t.createdBy.toLowerCase() === authStore.username.toLowerCase())
 )
 
 const stats = computed(() => ({
@@ -31,7 +34,7 @@ const stats = computed(() => ({
   resolved:   myTickets.value.filter(t => t.status === 'Resolved' || t.status === 'Approved').length,
 }))
 
-const categories = ['hardware', 'software', 'network', 'account']
+const categories = ['Hardware', 'Software', 'Network', 'Account']
 const byCategory = computed(() =>
   categories.map(cat => ({
     label: cat.charAt(0).toUpperCase() + cat.slice(1),
@@ -63,10 +66,10 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
 
 <template>
   <div class="overview-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="overview-page__content">
-      <AppHeader title="Overview" subtitle="Welcome back to your workspace" @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Overview" subtitle="Welcome back to your portal" @toggle-sidebar="toggleSidebar" />
 
       <!-- Greeting -->
       <div class="overview-greeting">
@@ -81,19 +84,24 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
 
       <!-- Stat cards -->
       <div class="overview-stats">
-        <div
-          v-for="card in STAT_CARDS"
-          :key="card.label"
-          :class="['stat-card', `stat-card--${card.color}`]"
-        >
-          <div class="stat-card__icon">
-            <component :is="card.icon" :size="22" />
+        <template v-if="isLoading">
+          <SkeletonLoader v-for="i in 4" :key="i" variant="stat" />
+        </template>
+        <template v-else>
+          <div
+            v-for="card in STAT_CARDS"
+            :key="card.label"
+            :class="['stat-card', `stat-card--${card.color}`]"
+          >
+            <div class="stat-card__icon">
+              <component :is="card.icon" :size="22" />
+            </div>
+            <div class="stat-card__body">
+              <span class="stat-card__value">{{ card.value }}</span>
+              <span class="stat-card__label">{{ card.label }}</span>
+            </div>
           </div>
-          <div class="stat-card__body">
-            <span class="stat-card__value">{{ card.value }}</span>
-            <span class="stat-card__label">{{ card.label }}</span>
-          </div>
-        </div>
+        </template>
       </div>
 
       <div class="overview-grid">
@@ -124,8 +132,10 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
             </button>
           </div>
 
-          <div v-if="recent.length === 0" class="overview-empty">No tickets yet.</div>
-
+          <div v-if="isLoading" class="recent-list">
+            <SkeletonLoader v-for="i in 3" :key="i" variant="row" />
+          </div>
+          <div v-else-if="recent.length === 0" class="overview-empty">No tickets yet.</div>
           <div v-else class="recent-list">
             <div v-for="t in recent" :key="t.id" class="recent-item">
               <div class="recent-item__info">

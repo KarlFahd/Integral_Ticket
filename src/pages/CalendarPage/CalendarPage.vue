@@ -1,10 +1,10 @@
-<script setup>
+﻿<script setup>
 import './CalendarPage.scss'
 import { ref, computed } from 'vue'
+import { useSidebar } from '../../composables/useSidebar.js'
 import { ChevronLeft, ChevronRight, Plus, Trash2, Clock, CalendarDays } from 'lucide-vue-next'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader  from '../../components/layout/AppHeader/AppHeader.vue'
-import { useSidebar } from '../../composables/useSidebar.js'
+import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
 
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
@@ -15,7 +15,7 @@ const SHORT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct
 const now    = new Date()
 const cursor = ref(new Date(now.getFullYear(), now.getMonth(), 1))
 
-// ── Selected day ──────────────────────────────────────────────────────────────
+// â”€â”€ Selected day â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const selected = ref({ day: now.getDate(), month: now.getMonth(), year: now.getFullYear() })
 
 const selectDay = (cell) => {
@@ -32,7 +32,7 @@ const goToToday = () => {
   selected.value = { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() }
 }
 
-// ── Calendar grid ─────────────────────────────────────────────────────────────
+// â”€â”€ Calendar grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const monthLabel = computed(() => `${MONTHS[cursor.value.getMonth()]} ${cursor.value.getFullYear()}`)
 
 const prevMonth = () => cursor.value = new Date(cursor.value.getFullYear(), cursor.value.getMonth() - 1, 1)
@@ -67,7 +67,7 @@ const selectedKey = computed(() => dayKey(selected.value))
 // Dots on calendar days that have events
 const hasEvents = (cell) => cell.day && events.value.some(e => e.date === dayKey(cell))
 
-// ── Events ────────────────────────────────────────────────────────────────────
+// â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const EVENT_COLORS = ['#7c3aed', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444']
 
 const events = ref([
@@ -81,7 +81,7 @@ const selectedEvents = computed(() =>
     .sort((a, b) => a.time.localeCompare(b.time))
 )
 
-// ── Add event form ────────────────────────────────────────────────────────────
+// â”€â”€ Add event form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const showForm   = ref(false)
 const newTitle   = ref('')
 const newTime    = ref('09:00')
@@ -114,14 +114,14 @@ const monthEventCount = computed(() => {
 
 <template>
   <div class="calendar-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="calendar-page__content">
-      <AppHeader title="Calendar" subtitle="Your schedule at a glance" @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Calendar" subtitle="Your schedule and events" @toggle-sidebar="toggleSidebar" />
 
       <div class="cal-layout">
 
-        <!-- ── LEFT: Calendar grid ────────────────────────────────────── -->
+        <!-- â”€â”€ LEFT: Calendar grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <div class="cal-card">
 
           <div class="cal-card__nav">
@@ -155,7 +155,7 @@ const monthEventCount = computed(() => {
 
         </div>
 
-        <!-- ── RIGHT: Events panel ────────────────────────────────────── -->
+        <!-- â”€â”€ RIGHT: Events panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
         <div class="events-panel">
 
           <!-- Panel header -->

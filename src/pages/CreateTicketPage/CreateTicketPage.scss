@@ -10,6 +10,25 @@
     padding: $space-lg;
   }
 
+  &__action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-lg;
+    gap: $space-md;
+    flex-wrap: wrap;
+  }
+
+  &__action-bar-btns {
+    display: flex;
+    gap: $space-md;
+    flex-shrink: 0;
+
+    .base-button {
+      min-width: 130px;
+    }
+  }
+
   &__back {
     display: inline-flex;
     align-items: center;
@@ -19,7 +38,6 @@
     cursor: pointer;
     font-size: $font-md;
     color: $color-text-light;
-    margin-bottom: $space-lg;
     padding: 0;
     transition: $transition-fast;
 
@@ -51,16 +69,6 @@
     font-size: $font-md;
   }
 
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: $space-md;
-    margin-top: $space-lg;
-
-    .base-button {
-      width: 160px;
-    }
-  }
 }
 
 // ─── Form Groups ──────────────────────────────────────────────────────────────
@@ -127,6 +135,16 @@
     &:focus {
       border-color: $color-primary;
     }
+  }
+
+  &__error {
+    color: $color-danger;
+    font-size: $font-sm;
+    margin: $space-xs 0 0;
+  }
+
+  &__textarea--error {
+    border-color: $color-danger !important;
   }
 
   &__char-count {

@@ -1,7 +1,7 @@
 <script setup>
 import './CreateTicketPage.scss'
 
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useSidebar } from '../../composables/useSidebar.js'
@@ -17,30 +17,60 @@ import { useAuthStore } from '../../stores/authStore.js'
 const router    = useRouter()
 const store     = useTicketStore()
 const authStore = useAuthStore()
-const { isLoading, error } = storeToRefs(store)
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
-
-const subject = ref('')
+const { isLoading, error } = storeToRefs(store)
+const subject     = ref('')
 const description = ref('')
-const category = ref('')
-const priority = ref('low')
-const attachment = ref(null)
-const fileInput = ref(null)
+const category    = ref('')
+const priority    = ref('Low')
+const attachment  = ref(null)
+const fileInput   = ref(null)
 
-const triggerFileInput = () => {
-  fileInput.value.click()
+// ─── Frontend validation ──────────────────────────────────────────────────────
+
+const validationErrors = ref({})
+
+const validate = () => {
+  const errors = {}
+  if (!subject.value.trim())
+    errors.subject = 'Subject is required.'
+  if (!description.value.trim())
+    errors.description = 'Description is required.'
+  else if (description.value.trim().length < 10)
+    errors.description = 'Description must be at least 10 characters.'
+  validationErrors.value = errors
+  return Object.keys(errors).length === 0
 }
+
+// ─── Frequently Reported Issues ───────────────────────────────────────────────
+
+const QUICK_ISSUES = [
+  { label: 'Password Reset',      subject: 'Password Reset Request',   category: 'Account',  priority: 'Medium' },
+  { label: 'VPN Access',          subject: 'VPN Access Issue',          category: 'Network',  priority: 'High'   },
+  { label: 'Outlook Not Working', subject: 'Outlook Not Working',       category: 'Software', priority: 'Medium' },
+  { label: 'Email Not Syncing',   subject: 'Email Not Syncing',         category: 'Software', priority: 'Low'    },
+  { label: 'Screen / Monitor',    subject: 'Monitor / Screen Issue',    category: 'Hardware', priority: 'High'   },
+]
+
+const applyQuickIssue = (issue) => {
+  subject.value  = issue.subject
+  category.value = issue.category
+  priority.value = issue.priority
+  validationErrors.value = {}
+}
+
+// ─── File handling ────────────────────────────────────────────────────────────
+
+const triggerFileInput = () => fileInput.value.click()
 
 const handleFileChange = (event) => {
   const file = event.target.files[0]
-  if (!file) return
-  attachment.value = file
+  if (file) attachment.value = file
 }
 
 const handleDrop = (event) => {
   const file = event.dataTransfer.files[0]
-  if (!file) return
-  attachment.value = file
+  if (file) attachment.value = file
 }
 
 const removeAttachment = () => {
@@ -48,43 +78,53 @@ const removeAttachment = () => {
   fileInput.value.value = ''
 }
 
-const handleCancel = () => {
-  router.push('/dashboard')
-}
+// ─── Submit ───────────────────────────────────────────────────────────────────
+
+const handleCancel = () => router.push('/dashboard')
 
 const handleSubmit = async () => {
-  if (!subject.value.trim() || !description.value.trim()) return
+  if (!validate()) return
   store.error = null
-
   try {
     await store.addTicket({
       subject:     subject.value.trim(),
       description: description.value.trim(),
-      category:    category.value || 'software',
+      category:    category.value || 'Software',
       priority:    priority.value,
       attachment:  attachment.value ? attachment.value.name : null,
       createdBy:   authStore.username,
     })
     router.push('/dashboard')
   } catch {
-    // error is displayed via store.error binding above the submit button
+    // error shown via store.error
   }
 }
 </script>
 
 <template>
   <div class="create-ticket-page">
-
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="create-ticket-page__content">
+      <AppHeader title="Add Ticket" subtitle="Submit a new support request" @toggle-sidebar="toggleSidebar" />
 
-      <AppHeader @toggle-sidebar="toggleSidebar" />
+      <!-- Sticky action bar — always visible at the top -->
+      <div class="create-ticket-page__action-bar">
+        <button class="create-ticket-page__back" @click="handleCancel">
+          <ArrowLeft :size="14" />
+          Back To Dashboard
+        </button>
 
-      <button class="create-ticket-page__back" @click="handleCancel">
-        <ArrowLeft :size="14" />
-        Back To Dashboard
-      </button>
+        <div class="create-ticket-page__action-bar-btns">
+          <BaseButton variant="secondary" @click="handleCancel">
+            Cancel
+          </BaseButton>
+          <BaseButton type="button" :disabled="isLoading" @click="handleSubmit">
+            {{ isLoading ? 'Submitting...' : 'Submit Ticket' }}
+            <Send v-if="!isLoading" :size="15" />
+          </BaseButton>
+        </div>
+      </div>
 
       <div class="create-ticket-page__body">
 
@@ -93,7 +133,7 @@ const handleSubmit = async () => {
           <h2 class="ticket-form__title">Ticket Information</h2>
 
           <p class="ticket-form__subtitle">
-            Fill in the details below to raise a new support Ticket.
+            Fill in the details below to raise a new support ticket.
           </p>
 
           <div class="form-row">
@@ -102,16 +142,12 @@ const handleSubmit = async () => {
               <label class="form-group__label">
                 Category <span class="form-group__required">*</span>
               </label>
-
-              <select
-                v-model="category"
-                class="form-group__select"
-              >
+              <select v-model="category" class="form-group__select">
                 <option value="">IT Support</option>
-                <option value="hardware">Hardware</option>
-                <option value="software">Software</option>
-                <option value="network">Network</option>
-                <option value="account">Account</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Network">Network</option>
+                <option value="Account">Account</option>
               </select>
             </div>
 
@@ -119,63 +155,57 @@ const handleSubmit = async () => {
               <label class="form-group__label">
                 Priority <span class="form-group__required">*</span>
               </label>
-
               <div class="priority-buttons">
-
                 <button
-                  :class="['priority-button', 'priority-button--low', { 'priority-button--active': priority === 'low' }]"
+                  :class="['priority-button', 'priority-button--low', { 'priority-button--active': priority === 'Low' }]"
                   type="button"
-                  @click="priority = 'low'"
-                >
-                  Low
-                </button>
-
+                  @click="priority = 'Low'"
+                >Low</button>
                 <button
-                  :class="['priority-button', 'priority-button--medium', { 'priority-button--active': priority === 'medium' }]"
+                  :class="['priority-button', 'priority-button--medium', { 'priority-button--active': priority === 'Medium' }]"
                   type="button"
-                  @click="priority = 'medium'"
-                >
-                  Medium
-                </button>
-
+                  @click="priority = 'Medium'"
+                >Medium</button>
                 <button
-                  :class="['priority-button', 'priority-button--high', { 'priority-button--active': priority === 'high' }]"
+                  :class="['priority-button', 'priority-button--high', { 'priority-button--active': priority === 'High' }]"
                   type="button"
-                  @click="priority = 'high'"
-                >
-                  High
-                </button>
-
+                  @click="priority = 'High'"
+                >High</button>
               </div>
             </div>
 
           </div>
 
-          <BaseInput
-            v-model="subject"
-            label="Subject"
-            :required="true"
-            placeholder="Login Issue"
-          />
+          <div class="form-group">
+            <BaseInput
+              v-model="subject"
+              label="Subject"
+              :required="true"
+              placeholder="e.g. Login Issue"
+            />
+            <p v-if="validationErrors.subject" class="form-group__error">
+              {{ validationErrors.subject }}
+            </p>
+          </div>
 
           <div class="form-group">
             <label class="form-group__label">
               Description <span class="form-group__required">*</span>
             </label>
-
             <div class="form-group__textarea-wrapper">
               <textarea
                 v-model="description"
                 class="form-group__textarea"
+                :class="{ 'form-group__textarea--error': validationErrors.description }"
                 rows="8"
                 placeholder="Describe your issue in detail..."
                 maxlength="200"
               ></textarea>
-
-              <span class="form-group__char-count">
-                {{ description.length }}/200
-              </span>
+              <span class="form-group__char-count">{{ description.length }}/200</span>
             </div>
+            <p v-if="validationErrors.description" class="form-group__error">
+              {{ validationErrors.description }}
+            </p>
           </div>
 
           <div class="form-group">
@@ -198,10 +228,7 @@ const handleSubmit = async () => {
               @dragover.prevent
               @drop.prevent="handleDrop"
             >
-              <p>
-                <span class="upload-box__link">Click to upload</span>
-                or drag and drop
-              </p>
+              <p><span class="upload-box__link">Click to upload</span> or drag and drop</p>
               <span>PNG, JPG, PDF up to 10MB</span>
             </div>
 
@@ -212,98 +239,55 @@ const handleSubmit = async () => {
                 <X :size="14" />
               </button>
             </div>
-
           </div>
 
           <p v-if="error" class="ticket-form__error">{{ error }}</p>
-
-          <div class="ticket-form__actions">
-
-            <BaseButton
-              variant="secondary"
-              @click="handleCancel"
-            >
-              cancle
-            </BaseButton>
-
-            <BaseButton type="submit" :disabled="isLoading">
-              {{ isLoading ? 'Submitting...' : 'Submit Ticket' }}
-              <Send v-if="!isLoading" :size="15" />
-            </BaseButton>
-
-          </div>
 
         </form>
 
         <div class="ticket-side-panel">
 
           <div class="side-card">
-
             <h3 class="side-card__title">
               <ListChecks :size="18" />
               Frequently Reported Issues
             </h3>
-
             <p class="side-card__subtitle">
-              Select a common issue to speed up the process.
+              Select a common issue to pre-fill the form.
             </p>
-
             <div class="side-card__list">
-
-              <button class="side-card__item">
-                <span>Password Reset</span>
+              <button
+                v-for="issue in QUICK_ISSUES"
+                :key="issue.label"
+                class="side-card__item"
+                type="button"
+                @click="applyQuickIssue(issue)"
+              >
+                <span>{{ issue.label }}</span>
                 <ChevronRight :size="16" />
               </button>
-
-              <button class="side-card__item">
-                <span>VPN Access</span>
-                <ChevronRight :size="16" />
-              </button>
-
-              <button class="side-card__item">
-                <span>Outlook Not Working</span>
-                <ChevronRight :size="16" />
-              </button>
-
-              <button class="side-card__item">
-                <span>Email not suncing</span>
-                <ChevronRight :size="16" />
-              </button>
-
-              <button class="side-card__item">
-                <span>Password Reset</span>
-              </button>
-
             </div>
-
           </div>
 
           <div class="side-card">
-
             <h3 class="side-card__title">
               <HelpCircle :size="18" />
-              Guidlines
+              Guidelines
             </h3>
-
             <ul class="side-card__guidelines">
-
               <li>
                 <CheckCircle2 :size="15" />
-                Fill in the details below to raise a new suppport Ticket.
+                Be specific — describe the issue as clearly as possible.
               </li>
-
               <li>
                 <CheckCircle2 :size="15" />
-                Fill in the details below to raise a new suppport Ticket.
+                Attach a screenshot if it helps explain the issue.
               </li>
-
               <li>
                 <CheckCircle2 :size="15" />
-                Fill in the details below to raise a new suppport Ticket.
+                Select the correct category so your ticket reaches the right team.
               </li>
-
             </ul>
-
           </div>
 
         </div>

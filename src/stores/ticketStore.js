@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ticketApi } from '../services/ticketApi.js'
+import { useToast }   from '../composables/useToast.js'
 
 export const useTicketStore = defineStore('tickets', () => {
+  const toast = useToast()
+
   const tickets    = ref([])
   const isLoading  = ref(false)
   const error      = ref(null)
@@ -11,10 +14,6 @@ export const useTicketStore = defineStore('tickets', () => {
   const pendingCount    = computed(() => tickets.value.filter(t => t.status === 'Pending').length)
   const inProgressCount = computed(() => tickets.value.filter(t => t.status === 'In Progress').length)
   const resolvedCount   = computed(() => tickets.value.filter(t => t.status === 'Approved' || t.status === 'Resolved').length)
-
-  // ─── Conversations (in-memory only, keyed by ticket id) ──────────────────────
-
-  const conversations = ref({})
 
   // ─── Actions ─────────────────────────────────────────────────────────────────
 
@@ -25,6 +24,7 @@ export const useTicketStore = defineStore('tickets', () => {
       tickets.value = await ticketApi.getAll()
     } catch (e) {
       error.value = 'Failed to load tickets.'
+      toast.error('Could not load tickets. Please refresh.')
     } finally {
       isLoading.value = false
     }
@@ -34,6 +34,7 @@ export const useTicketStore = defineStore('tickets', () => {
     try {
       return await ticketApi.getById(id)
     } catch {
+      toast.error('Could not load ticket details.')
       return null
     }
   }
@@ -45,15 +46,17 @@ export const useTicketStore = defineStore('tickets', () => {
       const ticket = await ticketApi.create({
         title:       subject,
         description,
-        category:    category || 'software',
+        category:    category || 'Software',
         priority,
         created_by:  createdBy || 'current_user',
         attachment:  attachment || null,
       })
       tickets.value.unshift(ticket)
+      toast.success('Ticket created successfully.')
       return ticket
     } catch (e) {
       error.value = 'Failed to create ticket.'
+      toast.error('Could not create ticket. Please try again.')
       throw e
     } finally {
       isLoading.value = false
@@ -65,9 +68,11 @@ export const useTicketStore = defineStore('tickets', () => {
       const updated = await ticketApi.updateStatus(id, newStatus)
       const index = tickets.value.findIndex(t => t.id === id)
       if (index !== -1) tickets.value[index] = updated
+      toast.success(`Status updated to "${newStatus}".`)
       return updated
     } catch (e) {
       error.value = 'Failed to update status.'
+      toast.error('Could not update status.')
       throw e
     }
   }
@@ -77,23 +82,19 @@ export const useTicketStore = defineStore('tickets', () => {
       const updated = await ticketApi.updatePriority(id, newPriority)
       const index = tickets.value.findIndex(t => t.id === id)
       if (index !== -1) tickets.value[index] = updated
+      toast.success(`Priority updated to "${newPriority}".`)
       return updated
     } catch (e) {
       error.value = 'Failed to update priority.'
+      toast.error('Could not update priority.')
       throw e
     }
   }
 
-  function sendMessage(ticketId, { isAgent, text }) {
-    if (!conversations.value[ticketId]) conversations.value[ticketId] = []
-    const msgs = conversations.value[ticketId]
-    const nextMsgId = msgs.length > 0 ? Math.max(...msgs.map(m => m.id)) + 1 : 1
-    const now  = new Date()
-    const time =
-      now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) +
-      ', ' +
-      now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
-    msgs.push({ id: nextMsgId, isAgent, role: isAgent ? 'Agent' : 'Employee', time, text })
+  // Patch a ticket in local state from a WebSocket event
+  function patchTicket(rawTicket) {
+    const index = tickets.value.findIndex(t => t.id === rawTicket.id)
+    if (index !== -1) tickets.value[index] = rawTicket
   }
 
   return {
@@ -104,12 +105,11 @@ export const useTicketStore = defineStore('tickets', () => {
     pendingCount,
     inProgressCount,
     resolvedCount,
-    conversations,
     fetchTickets,
     fetchTicket,
     addTicket,
     updateTicketStatus,
     updateTicketPriority,
-    sendMessage,
+    patchTicket,
   }
 })

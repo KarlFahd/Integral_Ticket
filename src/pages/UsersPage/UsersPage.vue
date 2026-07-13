@@ -1,18 +1,30 @@
-<script setup>
+﻿<script setup>
 import './UsersPage.scss'
-import { ref, onMounted } from 'vue'
-import { UserPlus, Users, X } from 'lucide-vue-next'
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader  from '../../components/layout/AppHeader/AppHeader.vue'
+import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { UserPlus, Users, Search, X } from 'lucide-vue-next'
 import { useSidebar } from '../../composables/useSidebar.js'
-import { usersApi }   from '../../services/usersApi.js'
+import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
+import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
+import { useUserStore } from '../../stores/userStore.js'
+
+const store = useUserStore()
+const { users, isLoading } = storeToRefs(store)
 
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
-
-const users      = ref([])
 const showForm   = ref(false)
 const formError  = ref('')
 const submitting = ref(false)
+const searchText = ref('')
+
+const filteredUsers = computed(() => {
+  const q = searchText.value.trim().toLowerCase()
+  if (!q) return users.value
+  return users.value.filter(u =>
+    u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q)
+  )
+})
 
 const form = ref({ name: '', username: '', email: '', password: '', is_hr: false })
 
@@ -21,9 +33,7 @@ const resetForm = () => {
   formError.value = ''
 }
 
-onMounted(async () => {
-  users.value = await usersApi.getAll()
-})
+onMounted(() => store.fetchUsers())
 
 const openForm = () => { resetForm(); showForm.value = true }
 const closeForm = () => { showForm.value = false; resetForm() }
@@ -36,8 +46,7 @@ const handleCreate = async () => {
   }
   submitting.value = true
   try {
-    const created = await usersApi.create(form.value)
-    users.value.push(created)
+    await store.createUser(form.value)
     closeForm()
   } catch (e) {
     const errors = e?.response?.data?.errors
@@ -66,10 +75,10 @@ const roleVariant = (u) => {
 
 <template>
   <div class="users-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" />
+    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
 
     <main class="users-page__content">
-      <AppHeader title="Team Members" subtitle="Manage your organization's users" @toggle-sidebar="toggleSidebar" />
+      <AppHeader title="Users" subtitle="Manage team members" @toggle-sidebar="toggleSidebar" />
 
       <!-- Page header -->
       <div class="users-header">
@@ -126,41 +135,61 @@ const roleVariant = (u) => {
         </div>
       </div>
 
-      <!-- Users table -->
-      <div class="users-table-wrap">
-        <table class="users-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Joined</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="u in users" :key="u.id">
-              <td>
-                <div class="users-table__name">
-                  <div class="users-table__avatar">{{ u.name.charAt(0).toUpperCase() }}</div>
-                  {{ u.name }}
-                </div>
-              </td>
-              <td class="users-table__username">@{{ u.username }}</td>
-              <td class="users-table__email">{{ u.email }}</td>
-              <td>
-                <span :class="['role-badge', `role-badge--${roleVariant(u)}`]">
-                  {{ roleLabel(u) }}
-                </span>
-              </td>
-              <td class="users-table__date">{{ u.created_at }}</td>
-            </tr>
-            <tr v-if="users.length === 0">
-              <td colspan="5" class="users-table__empty">No users found.</td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Search -->
+      <div class="users-search">
+        <Search :size="18" />
+        <input
+          v-model="searchText"
+          type="text"
+          placeholder="Search by name or username..."
+        />
       </div>
+
+      <!-- Users table: skeleton rows while loading -->
+      <template v-if="isLoading">
+        <div class="users-table-wrap users-table-wrap--skeleton">
+          <SkeletonLoader v-for="i in 5" :key="i" variant="row" />
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="users-table-wrap">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="u in filteredUsers" :key="u.id">
+                <td>
+                  <div class="users-table__name">
+                    <div class="users-table__avatar">{{ u.name.charAt(0).toUpperCase() }}</div>
+                    {{ u.name }}
+                  </div>
+                </td>
+                <td class="users-table__username">@{{ u.username }}</td>
+                <td class="users-table__email">{{ u.email }}</td>
+                <td>
+                  <span :class="['role-badge', `role-badge--${roleVariant(u)}`]">
+                    {{ roleLabel(u) }}
+                  </span>
+                </td>
+                <td class="users-table__date">{{ u.created_at }}</td>
+              </tr>
+              <tr v-if="filteredUsers.length === 0">
+                <td colspan="5" class="users-table__empty">
+                  {{ searchText ? 'No users match your search.' : 'No users found.' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </template>
 
     </main>
   </div>

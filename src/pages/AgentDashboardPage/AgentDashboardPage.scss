@@ -179,13 +179,36 @@
     }
   }
 
+  &__clear {
+    height: $height-input;
+    padding: 0 $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    background: $color-white;
+    color: $color-text-light;
+    font-size: $font-md;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: $transition-fast;
+
+    &:hover {
+      border-color: $color-danger;
+      color: $color-danger;
+    }
+  }
+
   &__export {
     height: $height-input;
     padding: 0 $space-lg;
-    border: 1px solid $color-primary;
+    border: none;
     border-radius: $radius-md;
-    background: $color-white;
-    color: $color-primary;
+    background: $color-primary;
+    color: $color-white;
     font-size: $font-md;
     font-weight: 600;
     cursor: pointer;
@@ -193,11 +216,11 @@
     align-items: center;
     gap: $space-xs;
     white-space: nowrap;
+    flex-shrink: 0;
     transition: $transition-fast;
 
     &:hover {
-      background: $color-primary;
-      color: $color-white;
+      opacity: 0.88;
     }
   }
 }
@@ -380,6 +403,35 @@
       border-color: $color-primary;
       color: $color-white;
     }
+  }
+}
+
+// ─── Table Empty State ────────────────────────────────────────────────────────
+
+.agent-table {
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $space-2xl $space-lg;
+    gap: $space-md;
+    color: $color-text-light;
+    text-align: center;
+
+    svg { opacity: 0.35; }
+
+    p {
+      margin: 0;
+      font-size: $font-md;
+      max-width: 320px;
+      line-height: 1.5;
+    }
+  }
+
+  &__row--skeleton {
+    pointer-events: none;
+    td { padding: 0; border: none; }
   }
 }
 
