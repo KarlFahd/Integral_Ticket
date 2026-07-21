@@ -1,0 +1,34 @@
+@use "../../../styles/variables" as *;
+
+.base-select {
+  border-radius: $radius-md;
+  padding: 0 $space-md;
+  font-size: $font-md;
+  background: $color-white;
+  color: $color-text-dark;
+  cursor: pointer;
+  outline: none;
+  transition: $transition-fast;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+
+  // ─── Sizes ────────────────────────────────────────────────────────────────
+
+  // Table / list filter bars.
+  &--md {
+    height: $height-input;
+    border: 1px solid $color-border;
+  }
+
+  // Main page filter bars (default).
+  &--lg {
+    height: $height-button;
+    border: 1px solid $color-border-medium;
+  }
+}

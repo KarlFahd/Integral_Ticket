@@ -5,10 +5,14 @@
   min-height: 100vh;
   background: $color-background;
 
+  // `min-width: 0` (not `overflow: hidden`) is the same fix every other
+  // page's __content uses to stop a wide flex child from overflowing —
+  // overflow:hidden also breaks AppHeader's sticky positioning, since it
+  // makes this box (not the page) the reference sticky sticks relative to.
   &__content {
     flex: 1;
     padding: $space-lg;
-    overflow: hidden;
+    min-width: 0;
   }
 }
 
@@ -44,24 +48,14 @@
   }
 }
 
-.cal-nav-btn {
+// Colors/hover live in BaseIconButton (variant="outline") — this just
+// pins the fixed 36px square. Compound selector so it reliably beats
+// .base-icon-button--md's own padding.
+.cal-nav-btn.base-icon-button {
   width: 36px;
   height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $color-background;
-  border: 1px solid $color-border;
+  padding: 0;
   border-radius: $radius-md;
-  cursor: pointer;
-  color: $color-text-dark;
-  transition: $transition-fast;
-
-  &:hover {
-    background: $color-primary;
-    color: $color-white;
-    border-color: $color-primary;
-  }
 }
 
 .cal-grid {
@@ -179,7 +173,12 @@
     color: $color-text-dark;
   }
 
-  &__today-btn {
+  // These two keep a unique look BaseButton's variants don't cover (a pill
+  // chip and a dashed empty-state tile), so they use BaseButton for its
+  // button semantics/behavior but fully re-skin visually. Compound
+  // selectors so these reliably beat BaseButton's own base rules.
+  &__today-btn.base-button {
+    height: auto;
     font-size: 12px;
     font-weight: 500;
     color: $color-primary;
@@ -187,8 +186,6 @@
     border: 1px solid rgba(124,58,237,.2);
     border-radius: 20px;
     padding: 3px 12px;
-    cursor: pointer;
-    transition: $transition-fast;
 
     &:hover { background: rgba(124,58,237,.15); }
   }
@@ -198,11 +195,8 @@
     border-bottom: 1px solid $color-border;
   }
 
-  &__add-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  &__add-btn.base-button {
+    height: auto;
     gap: 6px;
     padding: 9px;
     border: 1.5px dashed $color-border;
@@ -211,8 +205,6 @@
     color: $color-text-muted;
     font-size: 13px;
     font-weight: 500;
-    cursor: pointer;
-    transition: $transition-fast;
 
     &:hover {
       border-color: $color-primary;
@@ -308,12 +300,14 @@
     align-items: center;
   }
 
-  &__color-dot {
+  // The swatch color itself is set inline (per event color); this just
+  // shapes the BaseIconButton into a small circle. Compound selector so
+  // it reliably beats .base-icon-button--md's own padding.
+  &__color-dot.base-icon-button {
     width: 20px;
     height: 20px;
+    padding: 0;
     border-radius: 50%;
-    border: none;
-    cursor: pointer;
     outline-offset: 3px;
     transition: transform .1s;
 
@@ -325,33 +319,11 @@
     gap: 8px;
   }
 
-  &__cancel {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    background: transparent;
-    font-size: 13px;
-    cursor: pointer;
-    color: $color-text-muted;
-
-    &:hover { background: $color-background; }
-  }
-
+  // Visuals for both live in BaseButton now (variant="secondary" / variant="primary",
+  // size="sm") — flex:1 keeps them splitting the row evenly, same as before.
+  &__cancel,
   &__save {
     flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: $radius-md;
-    background: $color-primary;
-    color: $color-white;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .15s;
-
-    &:hover:not(:disabled) { background: darken(#7c3aed, 8%); }
-    &:disabled { opacity: .45; cursor: not-allowed; }
   }
 }
 
@@ -401,23 +373,14 @@
     color: $color-text-muted;
   }
 
-  &__delete {
+  // Colors/hover live in BaseIconButton (variant="ghost-danger") now —
+  // this just pins the fixed 28px square. Compound selector so it
+  // reliably beats .base-icon-button--md's own padding.
+  &__delete.base-icon-button {
     width: 28px;
     height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background: transparent;
-    color: #d1d5db;
+    padding: 0;
     border-radius: $radius-md;
-    cursor: pointer;
     flex-shrink: 0;
-    transition: $transition-fast;
-
-    &:hover {
-      background: #fef2f2;
-      color: #ef4444;
-    }
   }
 }

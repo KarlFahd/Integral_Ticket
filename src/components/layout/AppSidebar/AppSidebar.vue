@@ -11,11 +11,14 @@ import {
   Users,
   DollarSign,
   Ticket,
+  History,
   Settings,
   CircleUserRound,
   ShieldCheck,
   PanelLeftClose,
 } from 'lucide-vue-next'
+import AppSidebarItem from './AppSidebarItem.vue'
+import BaseIconButton from '../../common/BaseIconButton/BaseIconButton.vue'
 
 defineProps({ isCollapsed: { type: Boolean, default: false } })
 defineEmits(['close', 'toggle'])
@@ -31,6 +34,10 @@ const isActive = (path) => route.path === path || route.path.startsWith(path + '
 </script>
 
 <template>
+  <!-- Reserves the sidebar's width in the page's flex row — the actual
+       sidebar below is `position: fixed` and no longer does that itself. -->
+  <div class="app-sidebar-spacer" :class="{ 'app-sidebar-spacer--collapsed': isCollapsed }"></div>
+
   <div
     class="app-sidebar__overlay"
     :class="{ 'app-sidebar__overlay--visible': !isCollapsed }"
@@ -43,92 +50,95 @@ const isActive = (path) => route.path === path || route.path.startsWith(path + '
 
       <div class="app-sidebar__logo">
         <img :src="logoIcon" alt="Logo" />
-        <button
+        <BaseIconButton
           v-if="!isCollapsed"
           class="app-sidebar__collapse-btn"
+          tooltip="Collapse sidebar"
           @click="$emit('toggle')"
-          title="Collapse sidebar"
         >
           <PanelLeftClose :size="18" />
-        </button>
+        </BaseIconButton>
       </div>
 
       <div class="app-sidebar__menu">
 
-        <button
-          :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive('/overview') }]"
-          data-tooltip="Dashboard"
+        <AppSidebarItem
+          :icon="House"
+          label="Dashboard"
+          :active="isActive('/overview')"
+          :collapsed="isCollapsed"
           @click="router.push('/overview')"
-        >
-          <House :size="22" />
-          <span v-if="!isCollapsed">Dashboard</span>
-        </button>
+        />
 
-        <button
-          :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive('/calendar') }]"
-          data-tooltip="Calendar"
+        <AppSidebarItem
+          :icon="CalendarDays"
+          label="Calendar"
+          :active="isActive('/calendar')"
+          :collapsed="isCollapsed"
           @click="router.push('/calendar')"
-        >
-          <CalendarDays :size="22" />
-          <span v-if="!isCollapsed">Calendar</span>
-        </button>
+        />
 
-        <button
+        <AppSidebarItem
           v-if="isHr || isAdmin"
-          :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive('/users') }]"
-          data-tooltip="Users"
+          :icon="Users"
+          label="Users"
+          :active="isActive('/users')"
+          :collapsed="isCollapsed"
           @click="router.push('/users')"
-        >
-          <Users :size="22" />
-          <span v-if="!isCollapsed">Users</span>
-        </button>
+        />
 
-        <button
+        <AppSidebarItem
           v-if="isHr || isAdmin"
-          :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive('/finance') }]"
-          data-tooltip="Finance"
+          :icon="DollarSign"
+          label="Finance"
+          :active="isActive('/finance')"
+          :collapsed="isCollapsed"
           @click="router.push('/finance')"
-        >
-          <DollarSign :size="22" />
-          <span v-if="!isCollapsed">Finance</span>
-        </button>
+        />
 
-        <button
-          :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive(ticketsPath) }]"
-          data-tooltip="Tickets"
+        <AppSidebarItem
+          :icon="Ticket"
+          label="Tickets"
+          :active="isActive(ticketsPath)"
+          :collapsed="isCollapsed"
           @click="router.push(ticketsPath)"
-        >
-          <Ticket :size="22" />
-          <span v-if="!isCollapsed">Tickets</span>
-        </button>
+        />
+
+        <AppSidebarItem
+          v-if="isAdmin"
+          :icon="History"
+          label="History"
+          :active="isActive('/history')"
+          :collapsed="isCollapsed"
+          @click="router.push('/history')"
+        />
 
       </div>
     </div>
 
     <div class="app-sidebar__bottom">
 
-      <button
-        :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive('/setup-2fa') }]"
-        data-tooltip="2FA Setup"
+      <AppSidebarItem
+        :icon="ShieldCheck"
+        label="2FA Setup"
+        :active="isActive('/setup-2fa')"
+        :collapsed="isCollapsed"
         @click="router.push('/setup-2fa')"
-      >
-        <ShieldCheck :size="22" />
-        <span v-if="!isCollapsed">2FA Setup</span>
-      </button>
+      />
 
-      <button
-        :class="['app-sidebar__item', { 'app-sidebar__item--active': isActive('/settings') }]"
-        data-tooltip="Settings"
+      <AppSidebarItem
+        :icon="Settings"
+        label="Settings"
+        :active="isActive('/settings')"
+        :collapsed="isCollapsed"
         @click="router.push('/settings')"
-      >
-        <Settings :size="22" />
-        <span v-if="!isCollapsed">Settings</span>
-      </button>
+      />
 
-      <button class="app-sidebar__item" data-tooltip="Profile">
-        <CircleUserRound :size="22" />
-        <span v-if="!isCollapsed">Profile</span>
-      </button>
+      <AppSidebarItem
+        :icon="CircleUserRound"
+        label="Profile"
+        :collapsed="isCollapsed"
+      />
 
     </div>
   </aside>

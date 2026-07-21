@@ -1,0 +1,176 @@
+@use "../../../styles/variables" as *;
+
+.agent-table-wrapper {
+  background: $color-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  @media (max-width: #{$bp-md - 1px}) {
+    overflow-x: auto;
+  }
+}
+
+.agent-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    background: $color-background;
+
+    th {
+      padding: $space-md $space-lg;
+      text-align: left;
+      font-size: $font-sm;
+      font-weight: 600;
+      color: $color-text-light;
+      white-space: nowrap;
+      border-bottom: 1px solid $color-border-light;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $color-border-light;
+      transition: $transition-fast;
+      cursor: pointer;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: $color-background;
+      }
+    }
+
+    td {
+      padding: $space-md $space-lg;
+      font-size: $font-md;
+      vertical-align: middle;
+    }
+  }
+
+  &__ticket-id {
+    color: $color-primary;
+    font-weight: 600;
+  }
+
+  &__employee {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+  }
+
+  &__avatar {
+    color: $color-text-muted;
+    flex-shrink: 0;
+
+    &--sm {
+      color: $color-text-muted;
+    }
+  }
+
+  &__name {
+    font-weight: 600;
+    color: $color-text-dark;
+    font-size: $font-md;
+  }
+
+  &__email {
+    font-size: $font-xs;
+    color: $color-text-muted;
+  }
+
+  &__category {
+    font-size: $font-sm;
+    background: $color-background;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    padding: 2px $space-sm;
+    color: $color-text-dark;
+  }
+
+  &__priority {
+    font-size: $font-sm;
+    font-weight: 500;
+    border: 1px solid currentColor;
+    border-radius: $radius-sm;
+    padding: 2px $space-sm;
+
+    &--success { color: $color-success; }
+    &--warning { color: $color-warning; }
+    &--danger  { color: $color-danger;  }
+  }
+
+  &__status {
+    font-size: $font-sm;
+    font-weight: 500;
+    border-radius: $radius-sm;
+    padding: 2px $space-sm;
+
+    &--primary { background: rgba(123,47,247,0.1); color: $color-primary; }
+    &--warning { background: rgba(242,153,74,0.1); color: $color-warning; }
+    &--info    { background: rgba(79,108,255,0.1); color: $color-info;    }
+    &--success { background: rgba(40,199,111,0.1); color: $color-success; }
+    &--danger  { background: rgba(235,87,87,0.1);  color: $color-danger;  }
+  }
+
+  &__assigned {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    font-size: $font-md;
+    color: $color-text-dark;
+  }
+
+  &__date {
+    color: $color-text-light;
+    font-size: $font-sm;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $space-2xl $space-lg;
+    gap: $space-md;
+    color: $color-text-light;
+    text-align: center;
+
+    svg { opacity: 0.35; }
+
+    p {
+      margin: 0;
+      font-size: $font-md;
+      max-width: 320px;
+      line-height: 1.5;
+    }
+  }
+
+  &__row--skeleton {
+    pointer-events: none;
+    td { padding: 0; border: none; }
+  }
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+.agent-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $space-xs;
+
+  // Colors/hover live in BaseIconButton (variant="outline"/"solid") —
+  // this just pins the fixed 32px square. Compound selector so it
+  // reliably beats .base-icon-button--md's own padding.
+  &__btn.base-icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: $font-md;
+  }
+}

@@ -1,0 +1,16 @@
+@use "../../styles/variables" as *;
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    font-size: $font-md;
+    color: $color-text-light;
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,83 @@
+@use "../../../styles/variables" as *;
+
+.base-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: $radius-md;
+  color: $color-text-light;
+
+  &__icon {
+    flex-shrink: 0;
+  }
+
+  &__field {
+    width: 100%;
+    min-width: 0;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    font-size: $font-md;
+    color: $color-text-dark;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+  }
+
+  &__clear {
+    flex-shrink: 0;
+    display: flex;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: $color-text-muted;
+    transition: $transition-fast;
+
+    &:hover {
+      color: $color-text-dark;
+    }
+  }
+
+  // ─── Sizes ────────────────────────────────────────────────────────────────
+
+  // Compact, inline in a card header (e.g. conversation search).
+  &--sm {
+    padding: 5px $space-sm;
+    background: $color-background;
+    border: 1px solid $color-border;
+
+    .base-search-input__field {
+      font-size: $font-sm;
+    }
+
+    &:focus-within {
+      border-color: $color-primary;
+      background: $color-white;
+    }
+  }
+
+  // Table / list filter bars.
+  &--md {
+    height: $height-input;
+    padding: 0 $space-md;
+    background: $color-background;
+    border: 1px solid $color-border;
+
+    &:focus-within {
+      border-color: $color-primary;
+    }
+  }
+
+  // Main page filter bars (default).
+  &--lg {
+    height: $height-button;
+    padding: 0 $space-md;
+    background: $color-white;
+    border: 1px solid $color-border-medium;
+  }
+}

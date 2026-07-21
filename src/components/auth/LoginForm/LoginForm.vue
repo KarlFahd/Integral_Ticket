@@ -90,10 +90,10 @@ watch(otpCode, (val) => {
 
         <div class="login-form__separator">or</div>
 
-        <button type="button" class="login-form__google-button">
+        <BaseButton type="button" variant="secondary" class="login-form__google-button">
           <img :src="googleLogo" alt="Google" />
           <span>Google</span>
-        </button>
+        </BaseButton>
       </form>
     </template>
 
@@ -125,9 +125,9 @@ watch(otpCode, (val) => {
           {{ isLoading ? 'Verifying...' : 'Verify Code' }}
         </BaseButton>
 
-        <button type="button" class="login-form__back-link" @click="goBackToLogin">
+        <BaseButton type="button" variant="link" @click="goBackToLogin">
           ← Back to login
-        </button>
+        </BaseButton>
       </form>
     </template>
 

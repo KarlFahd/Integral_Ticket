@@ -7,83 +7,14 @@
   gap: $space-md;
   margin-bottom: $space-lg;
 
+  // Layout only — visuals live in BaseSearchInput / BaseSelect / BaseButton now.
   &__search {
     flex: 1;
     min-width: 0;
-    background: $color-white;
-    border: 1px solid $color-border-medium;
-    border-radius: $radius-md;
-    height: $height-button;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 $space-md;
-    color: $color-text-light;
-
-    input {
-      border: none;
-      outline: none;
-      width: 100%;
-      background: transparent;
-      font-size: $font-md;
-    }
   }
 
   &__select {
     flex-shrink: 0;
-    background: $color-white;
-    border: 1px solid $color-border-medium;
-    border-radius: $radius-md;
-    height: $height-button;
-    padding: 0 $space-md;
-    cursor: pointer;
-    font-size: $font-md;
-    outline: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__clear {
-    flex-shrink: 0;
-    height: $height-button;
-    padding: 0 $space-md;
-    border: 1px solid $color-border-medium;
-    border-radius: $radius-md;
-    background: $color-white;
-    color: $color-text-light;
-    font-size: $font-md;
-    font-weight: 500;
-    white-space: nowrap;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: $space-xs;
-    transition: $transition-fast;
-
-    &:hover {
-      border-color: $color-danger;
-      color: $color-danger;
-    }
-  }
-
-  &__create {
-    flex-shrink: 0;
-    height: $height-button;
-    padding: 0 $space-lg;
-    border: none;
-    border-radius: $radius-md;
-    background: $color-primary;
-    color: $color-white;
-    font-size: $font-md;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: $transition-fast;
-
-    &:hover {
-      opacity: 0.9;
-    }
   }
 
   // ─── Mobile ────────────────────────────────────────────────────────────────

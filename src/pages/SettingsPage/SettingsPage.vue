@@ -5,6 +5,7 @@ import { Sun, Moon, User, LogOut } from 'lucide-vue-next'
 import { useSidebar } from '../../composables/useSidebar.js'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useThemeStore } from '../../stores/themeStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
 
@@ -66,9 +67,9 @@ const handleLogout = () => {
             </div>
           </div>
 
-          <button class="settings-logout-btn" @click="handleLogout">
+          <BaseButton variant="outline-danger" class="settings-logout-btn" @click="handleLogout">
             <LogOut :size="16" /> Logout
-          </button>
+          </BaseButton>
         </div>
       </div>
     </main>

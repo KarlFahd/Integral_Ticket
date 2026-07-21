@@ -13,6 +13,7 @@ import TicketStatCard from '../../components/tickets/TicketStatCard/TicketStatCa
 import TicketFilters from '../../components/tickets/TicketFilters/TicketFilters.vue'
 import TicketCard from '../../components/tickets/TicketCard/TicketCard.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
+import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
 
@@ -37,7 +38,7 @@ const myTickets = computed(() =>
 const openCount       = computed(() => myTickets.value.filter(t => t.status === 'Open').length)
 const pendingCount    = computed(() => myTickets.value.filter(t => t.status === 'Pending').length)
 const inProgressCount = computed(() => myTickets.value.filter(t => t.status === 'In Progress').length)
-const resolvedCount   = computed(() => myTickets.value.filter(t => t.status === 'Approved' || t.status === 'Resolved').length)
+const resolvedCount   = computed(() => myTickets.value.filter(t => t.status === 'Resolved').length)
 
 const filteredTickets = computed(() => {
   return myTickets.value.filter(ticket => {
@@ -151,9 +152,16 @@ const goToTicket = (id) => {
                 ? 'You have no tickets yet. Create one to get started.'
                 : 'No tickets match your current filters.' }}
             </p>
-            <button v-if="myTickets.length === 0" class="tickets-empty__cta" @click="goToCreateTicket">
+            <BaseButton
+              v-if="myTickets.length === 0"
+              variant="primary"
+              size="lg"
+              :full-width="false"
+              class="tickets-empty__cta"
+              @click="goToCreateTicket"
+            >
               Create your first ticket
-            </button>
+            </BaseButton>
           </div>
         </template>
 

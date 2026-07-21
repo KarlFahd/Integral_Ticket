@@ -1,0 +1,64 @@
+@use "../../../styles/variables" as *;
+
+.stat-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-md $space-lg;
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  box-shadow: $shadow-sm;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &--primary { background: rgba(123, 47, 247, 0.1); color: $color-primary; }
+    &--warning { background: rgba(242, 153, 74, 0.1);  color: $color-warning; }
+    &--info    { background: rgba(79, 108, 255, 0.1);  color: $color-info;    }
+    &--success { background: rgba(40, 199, 111, 0.1);  color: $color-success; }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: $font-sm;
+    color: $color-text-light;
+    font-weight: 500;
+  }
+
+  &__value {
+    font-size: $font-xl;
+    font-weight: 700;
+    line-height: 1;
+
+    &--primary { color: $color-primary; }
+    &--warning { color: $color-warning; }
+    &--info    { color: $color-info;    }
+    &--success { color: $color-success; }
+  }
+
+  &__sub {
+    font-size: $font-xs;
+    color: $color-text-muted;
+  }
+
+  &--clickable {
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+  }
+}

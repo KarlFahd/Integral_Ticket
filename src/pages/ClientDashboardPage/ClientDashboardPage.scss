@@ -51,22 +51,9 @@
     max-width: 320px;
   }
 
+  // Visuals live in BaseButton now — only layout stays here.
   &__cta {
     margin-top: $space-sm;
-    height: $height-button;
-    padding: 0 $space-lg;
-    background: $color-primary;
-    color: $color-white;
-    border: none;
-    border-radius: $radius-md;
-    font-size: $font-md;
-    font-weight: 600;
-    cursor: pointer;
-    transition: $transition-fast;
-
-    &:hover {
-      opacity: 0.88;
-    }
   }
 }
 

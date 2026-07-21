@@ -82,6 +82,12 @@ const routes = [
     component: () => import('../pages/AgentTicketDetailPage/AgentTicketDetailPage.vue'),
     meta: { requiresAuth: true, requiresAdmin: true },
   },
+  {
+    path: '/history',
+    name: 'History',
+    component: () => import('../pages/HistoryPage/HistoryPage.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true },
+  },
 ]
 
 const router = createRouter({

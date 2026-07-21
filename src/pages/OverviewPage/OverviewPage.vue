@@ -7,6 +7,7 @@ import { Ticket, CheckCircle2, Clock, AlertCircle, Plus, ArrowRight } from 'luci
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
+import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore }   from '../../stores/authStore.js'
 import { storeToRefs }    from 'pinia'
@@ -31,7 +32,7 @@ const stats = computed(() => ({
   total:      myTickets.value.length,
   open:       myTickets.value.filter(t => t.status === 'Open').length,
   inProgress: myTickets.value.filter(t => t.status === 'In Progress').length,
-  resolved:   myTickets.value.filter(t => t.status === 'Resolved' || t.status === 'Approved').length,
+  resolved:   myTickets.value.filter(t => t.status === 'Resolved').length,
 }))
 
 const categories = ['Hardware', 'Software', 'Network', 'Account']
@@ -57,7 +58,7 @@ const STAT_CARDS = computed(() => [
 ])
 
 const statusVariant = (status) => {
-  const map = { Open: 'warning', 'In Progress': 'info', Resolved: 'success', Approved: 'success', Rejected: 'danger', Pending: 'warning' }
+  const map = { Open: 'warning', 'In Progress': 'info', Resolved: 'success', Rejected: 'danger', Pending: 'warning' }
   return map[status] ?? 'default'
 }
 
@@ -77,9 +78,16 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
           <h2 class="overview-greeting__name">Hello, {{ authStore.user?.name }}</h2>
           <p class="overview-greeting__sub">Here's what's happening with your tickets today.</p>
         </div>
-        <button v-if="!authStore.isAdmin" class="overview-greeting__cta" @click="router.push('/create-ticket')">
+        <BaseButton
+          v-if="!authStore.isAdmin"
+          variant="primary"
+          size="md"
+          :full-width="false"
+          class="overview-greeting__cta"
+          @click="router.push('/create-ticket')"
+        >
           <Plus :size="16" /> New Ticket
-        </button>
+        </BaseButton>
       </div>
 
       <!-- Stat cards -->
@@ -127,9 +135,9 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
         <div class="overview-card">
           <div class="overview-card__header">
             <h3 class="overview-card__title">Recent Tickets</h3>
-            <button class="overview-card__link" @click="goToTickets">
+            <BaseButton variant="link" class="overview-card__link" @click="goToTickets">
               View all <ArrowRight :size="13" />
-            </button>
+            </BaseButton>
           </div>
 
           <div v-if="isLoading" class="recent-list">

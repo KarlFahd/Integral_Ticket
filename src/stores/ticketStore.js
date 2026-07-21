@@ -13,7 +13,7 @@ export const useTicketStore = defineStore('tickets', () => {
   const openCount       = computed(() => tickets.value.filter(t => t.status === 'Open').length)
   const pendingCount    = computed(() => tickets.value.filter(t => t.status === 'Pending').length)
   const inProgressCount = computed(() => tickets.value.filter(t => t.status === 'In Progress').length)
-  const resolvedCount   = computed(() => tickets.value.filter(t => t.status === 'Approved' || t.status === 'Resolved').length)
+  const resolvedCount   = computed(() => tickets.value.filter(t => t.status === 'Resolved').length)
 
   // ─── Actions ─────────────────────────────────────────────────────────────────
 
@@ -91,6 +91,17 @@ export const useTicketStore = defineStore('tickets', () => {
     }
   }
 
+  async function deleteTicket(id) {
+    try {
+      await ticketApi.delete(id)
+      tickets.value = tickets.value.filter(t => t.id !== id)
+      toast.success('Ticket deleted.')
+    } catch (e) {
+      toast.error('Could not delete ticket. Please try again.')
+      throw e
+    }
+  }
+
   // Patch a ticket in local state from a WebSocket event
   function patchTicket(rawTicket) {
     const index = tickets.value.findIndex(t => t.id === rawTicket.id)
@@ -110,6 +121,7 @@ export const useTicketStore = defineStore('tickets', () => {
     addTicket,
     updateTicketStatus,
     updateTicketPriority,
+    deleteTicket,
     patchTicket,
   }
 })

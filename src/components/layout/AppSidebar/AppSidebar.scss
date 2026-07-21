@@ -1,17 +1,35 @@
 @use "../../../styles/variables" as *;
 
+// The sidebar is `position: fixed` — pinned to the screen for good, not
+// `position: sticky` (which "lets go" once you scroll past the bottom of
+// its containing block, i.e. exactly at the end of a long page). Since a
+// fixed element no longer takes up space in the page's flex row, this
+// spacer is the thing that actually reserves its width there — same
+// width, animates the same way, just invisible.
+.app-sidebar-spacer {
+  width: $sidebar-width;
+  flex-shrink: 0;
+  transition: $transition-base;
+
+  &--collapsed {
+    width: $sidebar-width-collapsed;
+  }
+
+  // Mobile sidebar is a slide-in overlay drawer — reserves no row space.
+  @media (max-width: #{$bp-md - 1px}) {
+    width: 0;
+  }
+}
+
 .app-sidebar {
   width: $sidebar-width;
   height: 100vh;
-  position: sticky;
+  position: fixed;
   top: 0;
-  // `position: sticky` always creates its own stacking context, so without
-  // an explicit z-index here the whole sidebar (tooltip included, no matter
-  // its own z-index) gets capped below AppHeader's stacking context
-  // (also sticky, with z-index: 100) — this has to beat that number.
+  left: 0;
+  // A fixed element already escapes stacking-context quirks sticky had,
+  // but this still has to beat AppHeader's own z-index (100).
   z-index: 101;
-  align-self: flex-start;
-  flex-shrink: 0;
   background-color: $color-white;
   display: flex;
   flex-direction: column;
@@ -78,24 +96,9 @@
     }
   }
 
+  // Visuals live in BaseIconButton (variant="ghost") now.
   &__collapse-btn {
     margin-left: auto;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: $color-text-light;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: $space-xs;
-    border-radius: $radius-sm;
-    transition: $transition-fast;
-    flex-shrink: 0;
-
-    &:hover {
-      background: $color-background;
-      color: $color-primary;
-    }
   }
 
   &__menu {
@@ -162,9 +165,6 @@
 
 @media (max-width: #{$bp-md - 1px}) {
   .app-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
     height: 100%;
     width: $sidebar-width;
     z-index: 1000;

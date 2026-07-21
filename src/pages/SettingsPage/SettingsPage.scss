@@ -105,24 +105,17 @@
   }
 }
 
-.settings-logout-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $space-sm;
-  width: 100%;
+// BaseButton's own "outline-danger" variant is neutral-until-hover; this
+// account action stays persistently red instead, so it keeps its own
+// look. Compound selector so it reliably beats the variant class.
+.settings-logout-btn.base-button {
   margin-top: $space-md;
-  padding: $space-sm;
-  border: 1px solid $color-danger;
-  border-radius: $radius-md;
-  background: transparent;
+  border-color: $color-danger;
   color: $color-danger;
-  font-size: $font-md;
-  font-weight: 600;
-  cursor: pointer;
-  transition: $transition-fast;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: rgba(235, 87, 87, 0.08);
+    border-color: $color-danger;
+    color: $color-danger;
   }
 }

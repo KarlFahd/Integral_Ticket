@@ -1,0 +1,130 @@
+@use "../../../styles/variables" as *;
+
+.ticket-summary {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  display: flex;
+  gap: $space-md;
+  align-items: flex-start;
+
+  &__icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    background: $color-primary-light;
+    color: $color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0 0 $space-xs;
+    font-size: $font-lg;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+
+  &__description {
+    margin: 0 0 $space-md;
+    font-size: $font-md;
+    color: $color-text-light;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+  }
+
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-sm;
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    padding: 2px $space-sm;
+    border-radius: $radius-sm;
+    font-size: $font-sm;
+    font-weight: 500;
+    border: 1px solid currentColor;
+
+    &--primary { color: $color-primary; }
+    &--warning { color: $color-warning; }
+    &--info    { color: $color-info; }
+    &--success { color: $color-success; }
+    &--danger  { color: $color-danger; }
+    &--default { color: $color-text-muted; border-color: $color-border; }
+  }
+
+  &__attachment {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    font-size: $font-sm;
+    color: $color-text-muted;
+  }
+
+  &__attachment-name {
+    color: $color-primary;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__attachment-download {
+    color: $color-primary;
+    cursor: pointer;
+  }
+
+  &__attachment-empty {
+    color: $color-text-muted;
+    font-style: italic;
+  }
+
+  &__date {
+    flex-shrink: 0;
+    text-align: right;
+    font-size: $font-sm;
+    color: $color-text-muted;
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+  }
+
+  &__date-value {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    color: $color-text-dark;
+    font-size: $font-md;
+  }
+}
+
+// ─── Mobile ───────────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-md - 1px}) {
+  .ticket-summary {
+    flex-wrap: wrap;
+
+    &__date {
+      flex-basis: 100%;
+      text-align: left;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+}

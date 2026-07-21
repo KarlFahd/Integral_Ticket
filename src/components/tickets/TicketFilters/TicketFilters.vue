@@ -1,7 +1,11 @@
 <script setup>
 import './TicketFilters.scss'
 import { ref, computed } from 'vue'
-import { Search, X } from 'lucide-vue-next'
+import { X } from 'lucide-vue-next'
+
+import BaseButton from '../../common/BaseButton/BaseButton.vue'
+import BaseSearchInput from '../../common/BaseSearchInput/BaseSearchInput.vue'
+import BaseSelect from '../../common/BaseSelect/BaseSelect.vue'
 
 const emit = defineEmits(['search', 'status-change', 'priority-change', 'category-change', 'create-ticket', 'clear-filters'])
 
@@ -17,24 +21,24 @@ const hasActiveFilters = computed(() =>
   selectedCategory.value !== 'All'
 )
 
-const onSearch = (e) => {
-  searchText.value = e.target.value
-  emit('search', searchText.value)
+const onSearch = (value) => {
+  searchText.value = value
+  emit('search', value)
 }
 
-const onStatusChange = (e) => {
-  selectedStatus.value = e.target.value
-  emit('status-change', e.target.value)
+const onStatusChange = (value) => {
+  selectedStatus.value = value
+  emit('status-change', value)
 }
 
-const onPriorityChange = (e) => {
-  selectedPriority.value = e.target.value
-  emit('priority-change', e.target.value)
+const onPriorityChange = (value) => {
+  selectedPriority.value = value
+  emit('priority-change', value)
 }
 
-const onCategoryChange = (e) => {
-  selectedCategory.value = e.target.value
-  emit('category-change', e.target.value)
+const onCategoryChange = (value) => {
+  selectedCategory.value = value
+  emit('category-change', value)
 }
 
 const clearFilters = () => {
@@ -49,55 +53,58 @@ const clearFilters = () => {
 <template>
   <div class="ticket-filters">
 
-    <div class="ticket-filters__search">
-      <Search :size="18" />
-      <input
-        :value="searchText"
-        type="text"
-        placeholder="Search ticket..."
-        @input="onSearch"
-      />
-    </div>
+    <BaseSearchInput
+      :model-value="searchText"
+      placeholder="Search ticket..."
+      class="ticket-filters__search"
+      @update:model-value="onSearch"
+    />
 
-    <select class="ticket-filters__select" :value="selectedStatus" @change="onStatusChange">
+    <BaseSelect :model-value="selectedStatus" class="ticket-filters__select" @update:model-value="onStatusChange">
       <option value="All">All Status</option>
       <option value="Open">Open</option>
       <option value="Pending">Pending</option>
       <option value="In Progress">In Progress</option>
-      <option value="Approved">Approved</option>
+      <option value="Resolved">Resolved</option>
       <option value="Rejected">Rejected</option>
-    </select>
+    </BaseSelect>
 
-    <select class="ticket-filters__select" :value="selectedPriority" @change="onPriorityChange">
+    <BaseSelect :model-value="selectedPriority" class="ticket-filters__select" @update:model-value="onPriorityChange">
       <option value="All">All Priority</option>
       <option value="Low">Low</option>
       <option value="Medium">Medium</option>
       <option value="High">High</option>
-    </select>
+    </BaseSelect>
 
-    <select class="ticket-filters__select" :value="selectedCategory" @change="onCategoryChange">
+    <BaseSelect :model-value="selectedCategory" class="ticket-filters__select" @update:model-value="onCategoryChange">
       <option value="All">All Category</option>
       <option value="Hardware">Hardware</option>
       <option value="Software">Software</option>
       <option value="Network">Network</option>
       <option value="Account">Account</option>
-    </select>
+    </BaseSelect>
 
-    <button
+    <BaseButton
       v-if="hasActiveFilters"
+      variant="outline-danger"
+      size="lg"
+      :full-width="false"
       class="ticket-filters__clear"
       @click="clearFilters"
     >
       <X :size="14" />
       Clear
-    </button>
+    </BaseButton>
 
-    <button
+    <BaseButton
+      variant="primary"
+      size="lg"
+      :full-width="false"
       class="ticket-filters__create"
       @click="emit('create-ticket')"
     >
       + Add Ticket
-    </button>
+    </BaseButton>
 
   </div>
 </template>

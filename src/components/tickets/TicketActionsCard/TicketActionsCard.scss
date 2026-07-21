@@ -1,0 +1,124 @@
+@use "../../../styles/variables" as *;
+
+.actions-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+
+  &__title {
+    margin: 0;
+    padding: $space-lg;
+    font-size: $font-base;
+    font-weight: 700;
+    color: $color-text-dark;
+    border-bottom: 1px solid $color-border-light;
+  }
+}
+
+.actions-item {
+  border-bottom: 1px solid $color-border-light;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $space-md $space-lg;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $color-background;
+    }
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    font-size: $font-md;
+    font-weight: 500;
+    color: $color-text-dark;
+  }
+
+  &--danger &__left {
+    color: $color-danger;
+  }
+
+  &__content {
+    padding: $space-sm $space-lg $space-md;
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+  }
+
+  &__textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: $space-sm $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    font-size: $font-md;
+    font-family: inherit;
+    resize: none;
+    min-height: 80px;
+    outline: none;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  // Visuals live in BaseButton (variant="primary" size="sm") — only layout stays here.
+  &__save {
+    align-self: flex-end;
+  }
+
+  &__confirm-text {
+    margin: 0 0 $space-sm;
+    font-size: $font-md;
+    color: $color-text-light;
+  }
+
+  &__confirm-btn {
+    width: 100%;
+    padding: $space-sm $space-md;
+    background: $color-danger;
+    color: $color-white;
+    border: none;
+    border-radius: $radius-sm;
+    font-size: $font-md;
+    font-weight: 600;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+
+// ─── Status Options (inside Update Status accordion) ─────────────────────────
+// Border/text color per status live in BaseChip's own color classes now —
+// this just restores the stacked full-width list look (vs. BaseChip's
+// default inline pill). Compound selector so it reliably wins.
+
+.status-option.base-chip {
+  width: 100%;
+  padding: $space-xs $space-md;
+  border-radius: $radius-sm;
+  font-size: $font-md;
+  font-weight: 500;
+  text-align: left;
+  background: transparent;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}

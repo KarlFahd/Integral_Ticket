@@ -29,22 +29,7 @@
     font-weight: 500;
   }
 
-  &__add {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-xs;
-    background: $color-primary;
-    color: $color-white;
-    border: none;
-    border-radius: $radius-md;
-    padding: $space-sm $space-lg;
-    font-size: $font-md;
-    font-weight: 600;
-    cursor: pointer;
-    transition: $transition-fast;
-
-    &:hover { opacity: 0.9; }
-  }
+  // Visuals live in BaseButton (variant="primary") now.
 }
 
 // ── Create user form ──────────────────────────────────────────────────────────
@@ -70,18 +55,7 @@
     }
   }
 
-  &__close {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: $color-text-muted;
-    display: flex;
-    padding: 4px;
-    border-radius: $radius-sm;
-    transition: $transition-fast;
-
-    &:hover { background: $color-background; color: $color-danger; }
-  }
+  // Visuals live in BaseIconButton (variant="ghost-danger") now.
 }
 
 .user-form-grid {
@@ -93,29 +67,16 @@
   @media (max-width: #{$bp-md - 1px}) { grid-template-columns: 1fr; }
 }
 
+// Field shell (label/input/required-marker) lives in BaseInput now —
+// this just keeps the error message positioned under the field.
 .user-form-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 
-  label {
-    font-size: $font-sm;
-    font-weight: 600;
-    color: $color-text-light;
-  }
-
-  input {
-    padding: $space-sm $space-md;
-    border: 1px solid $color-border;
-    border-radius: $radius-md;
-    font-size: $font-md;
-    color: $color-text-dark;
-    outline: none;
-    font-family: inherit;
-    transition: $transition-fast;
-
-    &:focus { border-color: $color-primary; }
-    &::placeholder { color: $color-text-muted; }
+  &__error {
+    font-size: $font-xs;
+    color: $color-danger;
   }
 }
 
@@ -167,55 +128,14 @@
   gap: $space-sm;
 }
 
-.user-form-cancel {
-  padding: $space-sm $space-lg;
-  background: transparent;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  font-size: $font-md;
-  cursor: pointer;
-  color: $color-text-light;
-  transition: $transition-fast;
-
-  &:hover { background: $color-background; }
-}
-
-.user-form-submit {
-  padding: $space-sm $space-lg;
-  background: $color-primary;
-  color: $color-white;
-  border: none;
-  border-radius: $radius-md;
-  font-size: $font-md;
-  font-weight: 600;
-  cursor: pointer;
-  transition: $transition-fast;
-
-  &:hover:not(:disabled) { opacity: 0.9; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-}
+// Visuals for Cancel/Create User live in BaseButton now
+// (variant="secondary" / variant="primary").
 
 // ── Search ────────────────────────────────────────────────────────────────────
+// Visuals live in BaseSearchInput now — only layout stays here.
 
 .users-search {
-  background: $color-white;
-  border: 1px solid $color-border-medium;
-  border-radius: $radius-md;
-  height: $height-button;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 $space-md;
-  color: $color-text-light;
   margin-bottom: $space-lg;
-
-  input {
-    border: none;
-    outline: none;
-    width: 100%;
-    background: transparent;
-    font-size: $font-md;
-  }
 }
 
 // ── Users table ───────────────────────────────────────────────────────────────

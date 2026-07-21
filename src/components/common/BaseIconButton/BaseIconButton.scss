@@ -1,0 +1,106 @@
+@use "../../../styles/variables" as *;
+
+.base-icon-button {
+  border: none;
+  border-radius: $radius-sm;
+  background: transparent;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  transition: $transition-fast;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // ─── Sizes (padding around the slotted icon) ─────────────────────────────
+
+  &--sm { padding: 4px; }
+  &--md { padding: $space-xs; }
+  &--lg { padding: $space-sm; border-radius: $radius-md; }
+
+  // ─── Variants ─────────────────────────────────────────────────────────────
+
+  &--ghost {
+    color: $color-text-dark;
+
+    &:hover:not(:disabled) {
+      background: $color-background;
+      color: $color-primary;
+    }
+  }
+
+  &--ghost-danger {
+    color: $color-text-muted;
+
+    &:hover:not(:disabled) {
+      background: $color-background;
+      color: $color-danger;
+    }
+  }
+
+  &--outline {
+    border: 1px solid $color-border;
+    background: $color-background;
+    color: $color-text-dark;
+
+    &:hover:not(:disabled) {
+      background: $color-primary;
+      border-color: $color-primary;
+      color: $color-white;
+    }
+  }
+
+  &--solid {
+    background: $color-primary;
+    color: $color-white;
+
+    &:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+  }
+
+  &--inverse {
+    color: $color-white;
+    opacity: 0.85;
+
+    &:hover:not(:disabled) {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  // ─── Tooltip (CSS-only, shown above the button on hover) ────────────────
+
+  &--tooltip {
+    position: relative;
+
+    &::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f2937;
+      color: #fff;
+      font-size: $font-xs;
+      font-weight: 500;
+      white-space: nowrap;
+      padding: 4px 8px;
+      border-radius: $radius-sm;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity $transition-fast;
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
+}

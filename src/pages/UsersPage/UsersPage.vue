@@ -2,11 +2,15 @@
 import './UsersPage.scss'
 import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { UserPlus, Users, Search, X } from 'lucide-vue-next'
+import { UserPlus, Users, X } from 'lucide-vue-next'
 import { useSidebar } from '../../composables/useSidebar.js'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
+import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
+import BaseInput from '../../components/common/BaseInput/BaseInput.vue'
+import BaseSearchInput from '../../components/common/BaseSearchInput/BaseSearchInput.vue'
+import BaseIconButton from '../../components/common/BaseIconButton/BaseIconButton.vue'
 import { useUserStore } from '../../stores/userStore.js'
 
 const store = useUserStore()
@@ -27,9 +31,11 @@ const filteredUsers = computed(() => {
 })
 
 const form = ref({ name: '', username: '', email: '', password: '', is_hr: false })
+const fieldErrors = ref({ name: '', username: '', email: '', password: '' })
 
 const resetForm = () => {
   form.value = { name: '', username: '', email: '', password: '', is_hr: false }
+  fieldErrors.value = { name: '', username: '', email: '', password: '' }
   formError.value = ''
 }
 
@@ -38,12 +44,35 @@ onMounted(() => store.fetchUsers())
 const openForm = () => { resetForm(); showForm.value = true }
 const closeForm = () => { showForm.value = false; resetForm() }
 
+const clearFieldError = (field) => { fieldErrors.value[field] = '' }
+
+const updateField = (field, value) => {
+  form.value[field] = value
+  clearFieldError(field)
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const validateForm = () => {
+  const errors = { name: '', username: '', email: '', password: '' }
+
+  if (!form.value.name.trim())      errors.name = 'Full name is required.'
+  if (!form.value.username.trim())  errors.username = 'Username is required.'
+
+  if (!form.value.email.trim())          errors.email = 'Email is required.'
+  else if (!EMAIL_PATTERN.test(form.value.email.trim())) errors.email = 'Enter a valid email address.'
+
+  if (!form.value.password)              errors.password = 'Password is required.'
+  else if (form.value.password.length < 6) errors.password = 'Password must be at least 6 characters.'
+
+  fieldErrors.value = errors
+  return Object.values(errors).every(msg => !msg)
+}
+
 const handleCreate = async () => {
   formError.value = ''
-  if (!form.value.name || !form.value.username || !form.value.email || !form.value.password) {
-    formError.value = 'All fields are required.'
-    return
-  }
+  if (!validateForm()) return
+
   submitting.value = true
   try {
     await store.createUser(form.value)
@@ -51,7 +80,9 @@ const handleCreate = async () => {
   } catch (e) {
     const errors = e?.response?.data?.errors
     if (errors) {
-      formError.value = Object.values(errors).flat().join(' ')
+      for (const field of Object.keys(fieldErrors.value)) {
+        if (errors[field]) fieldErrors.value[field] = errors[field][0]
+      }
     } else {
       formError.value = e?.response?.data?.message || 'Could not create user.'
     }
@@ -86,34 +117,64 @@ const roleVariant = (u) => {
           <Users :size="20" />
           <span>{{ users.length }} member{{ users.length !== 1 ? 's' : '' }}</span>
         </div>
-        <button class="users-header__add" @click="openForm">
+        <BaseButton variant="primary" size="md" :full-width="false" class="users-header__add" @click="openForm">
           <UserPlus :size="16" /> Add User
-        </button>
+        </BaseButton>
       </div>
 
       <!-- Create User Form -->
       <div v-if="showForm" class="user-form-card">
         <div class="user-form-card__header">
           <h3>New User</h3>
-          <button class="user-form-card__close" @click="closeForm"><X :size="16" /></button>
+          <BaseIconButton variant="ghost-danger" class="user-form-card__close" @click="closeForm"><X :size="16" /></BaseIconButton>
         </div>
 
         <div class="user-form-grid">
           <div class="user-form-field">
-            <label>Full Name *</label>
-            <input v-model="form.name" type="text" placeholder="Karl Fahed" />
+            <BaseInput
+              :model-value="form.name"
+              label="Full Name"
+              required
+              placeholder="Karl Fahed"
+              :error="!!fieldErrors.name"
+              @update:model-value="updateField('name', $event)"
+            />
+            <span v-if="fieldErrors.name" class="user-form-field__error">{{ fieldErrors.name }}</span>
           </div>
           <div class="user-form-field">
-            <label>Username *</label>
-            <input v-model="form.username" type="text" placeholder="karl" />
+            <BaseInput
+              :model-value="form.username"
+              label="Username"
+              required
+              placeholder="karl"
+              :error="!!fieldErrors.username"
+              @update:model-value="updateField('username', $event)"
+            />
+            <span v-if="fieldErrors.username" class="user-form-field__error">{{ fieldErrors.username }}</span>
           </div>
           <div class="user-form-field">
-            <label>Email *</label>
-            <input v-model="form.email" type="email" placeholder="karl@integra.com" />
+            <BaseInput
+              :model-value="form.email"
+              type="email"
+              label="Email"
+              required
+              placeholder="karl@integra.com"
+              :error="!!fieldErrors.email"
+              @update:model-value="updateField('email', $event)"
+            />
+            <span v-if="fieldErrors.email" class="user-form-field__error">{{ fieldErrors.email }}</span>
           </div>
           <div class="user-form-field">
-            <label>Password *</label>
-            <input v-model="form.password" type="password" placeholder="Min. 6 characters" />
+            <BaseInput
+              :model-value="form.password"
+              type="password"
+              label="Password"
+              required
+              placeholder="Min. 6 characters"
+              :error="!!fieldErrors.password"
+              @update:model-value="updateField('password', $event)"
+            />
+            <span v-if="fieldErrors.password" class="user-form-field__error">{{ fieldErrors.password }}</span>
           </div>
         </div>
 
@@ -128,22 +189,19 @@ const roleVariant = (u) => {
         <p v-if="formError" class="user-form-error">{{ formError }}</p>
 
         <div class="user-form-actions">
-          <button class="user-form-cancel" @click="closeForm">Cancel</button>
-          <button class="user-form-submit" :disabled="submitting" @click="handleCreate">
+          <BaseButton variant="secondary" size="md" :full-width="false" @click="closeForm">Cancel</BaseButton>
+          <BaseButton variant="primary" size="md" :full-width="false" :disabled="submitting" @click="handleCreate">
             {{ submitting ? 'Creating…' : 'Create User' }}
-          </button>
+          </BaseButton>
         </div>
       </div>
 
       <!-- Search -->
-      <div class="users-search">
-        <Search :size="18" />
-        <input
-          v-model="searchText"
-          type="text"
-          placeholder="Search by name or username..."
-        />
-      </div>
+      <BaseSearchInput
+        v-model="searchText"
+        placeholder="Search by name or username..."
+        class="users-search"
+      />
 
       <!-- Users table: skeleton rows while loading -->
       <template v-if="isLoading">

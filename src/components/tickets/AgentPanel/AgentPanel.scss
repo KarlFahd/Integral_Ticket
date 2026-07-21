@@ -1,0 +1,15 @@
+@use "../../../styles/variables" as *;
+
+.agent-panel {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  box-shadow: $shadow-sm;
+
+  &__title {
+    margin: 0 0 $space-md;
+    font-size: $font-base;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+}

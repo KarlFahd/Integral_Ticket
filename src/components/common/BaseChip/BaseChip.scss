@@ -1,0 +1,27 @@
+@use "../../../styles/variables" as *;
+
+.base-chip {
+  padding: $space-sm $space-md;
+  border-radius: $radius-md;
+  background: $color-white;
+  font-size: $font-md;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition-fast;
+
+  &--primary { border: 1px solid $color-primary; color: $color-primary; }
+  &--success { border: 1px solid $color-success; color: $color-success; }
+  &--warning { border: 1px solid $color-warning; color: $color-warning; }
+  &--info    { border: 1px solid $color-info;    color: $color-info;    }
+  &--danger  { border: 1px solid $color-danger;  color: $color-danger;  }
+
+  &--active {
+    color: $color-white;
+
+    &.base-chip--primary { background: $color-primary; }
+    &.base-chip--success { background: $color-success; }
+    &.base-chip--warning { background: $color-warning; }
+    &.base-chip--info    { background: $color-info;    }
+    &.base-chip--danger  { background: $color-danger;  }
+  }
+}

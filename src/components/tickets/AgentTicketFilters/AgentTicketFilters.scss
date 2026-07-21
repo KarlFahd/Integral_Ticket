@@ -1,0 +1,47 @@
+@use "../../../styles/variables" as *;
+
+.agent-filters {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-md;
+  box-shadow: $shadow-sm;
+
+  // Layout only — visuals live in BaseSearchInput / BaseSelect / BaseButton.
+  &__search {
+    flex: 1;
+  }
+
+  &__select {
+    flex-shrink: 0;
+  }
+
+  &__clear,
+  &__export {
+    flex-shrink: 0;
+  }
+}
+
+// ─── Mobile ────────────────────────────────────────────────────────────────
+
+@media (max-width: #{$bp-md - 1px}) {
+  .agent-filters {
+    flex-wrap: wrap;
+
+    &__search {
+      flex: 1 1 100%;
+    }
+
+    &__select {
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__export {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
+  }
+}

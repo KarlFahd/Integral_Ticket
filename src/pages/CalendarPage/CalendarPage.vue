@@ -5,6 +5,8 @@ import { useSidebar } from '../../composables/useSidebar.js'
 import { ChevronLeft, ChevronRight, Plus, Trash2, Clock, CalendarDays } from 'lucide-vue-next'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
+import BaseIconButton from '../../components/common/BaseIconButton/BaseIconButton.vue'
 
 const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
@@ -125,9 +127,9 @@ const monthEventCount = computed(() => {
         <div class="cal-card">
 
           <div class="cal-card__nav">
-            <button class="cal-nav-btn" @click="prevMonth"><ChevronLeft :size="18" /></button>
+            <BaseIconButton variant="outline" class="cal-nav-btn" @click="prevMonth"><ChevronLeft :size="18" /></BaseIconButton>
             <h2 class="cal-card__month">{{ monthLabel }}</h2>
-            <button class="cal-nav-btn" @click="nextMonth"><ChevronRight :size="18" /></button>
+            <BaseIconButton variant="outline" class="cal-nav-btn" @click="nextMonth"><ChevronRight :size="18" /></BaseIconButton>
           </div>
 
           <div class="cal-grid cal-grid--header">
@@ -164,14 +166,14 @@ const monthEventCount = computed(() => {
               <CalendarDays :size="16" class="events-panel__date-icon" />
               <span class="events-panel__date-label">{{ selectedLabel }}</span>
             </div>
-            <button class="events-panel__today-btn" @click="goToToday">Today</button>
+            <BaseButton variant="secondary" size="sm" class="events-panel__today-btn" @click="goToToday">Today</BaseButton>
           </div>
 
           <!-- Add event button / form -->
           <div class="events-panel__add-wrap">
-            <button v-if="!showForm" class="events-panel__add-btn" @click="showForm = true">
+            <BaseButton v-if="!showForm" variant="secondary" size="sm" full-width class="events-panel__add-btn" @click="showForm = true">
               <Plus :size="14" /> Add Event
-            </button>
+            </BaseButton>
 
             <div v-else class="event-form">
               <input
@@ -188,17 +190,18 @@ const monthEventCount = computed(() => {
                 type="time"
               />
               <div class="event-form__colors">
-                <button
+                <BaseIconButton
                   v-for="(c, idx) in EVENT_COLORS"
                   :key="c"
+                  variant="ghost"
                   class="event-form__color-dot"
                   :style="{ background: c, outline: colorIndex === idx ? `2px solid ${c}` : 'none' }"
                   @click="colorIndex = idx"
-                ></button>
+                />
               </div>
               <div class="event-form__actions">
-                <button class="event-form__cancel" @click="showForm = false">Cancel</button>
-                <button class="event-form__save" :disabled="!newTitle.trim()" @click="addEvent">Save</button>
+                <BaseButton variant="secondary" size="sm" class="event-form__cancel" @click="showForm = false">Cancel</BaseButton>
+                <BaseButton variant="primary" size="sm" :disabled="!newTitle.trim()" class="event-form__save" @click="addEvent">Save</BaseButton>
               </div>
             </div>
           </div>
@@ -224,9 +227,9 @@ const monthEventCount = computed(() => {
                   <Clock :size="11" /> {{ ev.time }}
                 </span>
               </div>
-              <button class="event-item__delete" @click="removeEvent(ev.id)">
+              <BaseIconButton variant="ghost-danger" class="event-item__delete" @click="removeEvent(ev.id)">
                 <Trash2 :size="13" />
-              </button>
+              </BaseIconButton>
             </div>
 
           </div>

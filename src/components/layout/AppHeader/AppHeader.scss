@@ -1,12 +1,46 @@
 @use "../../../styles/variables" as *;
 
+// Reserves the header's height in the page's normal flow — the header
+// itself is `position: fixed` and no longer does that itself. Its height
+// is set inline from JS (AppHeader.vue measures the real header, since
+// title/subtitle length can vary how tall it renders).
+//
+// Every page's <main class="...__content"> still has its own top padding
+// ($space-lg), which used to give the header its breathing room from the
+// very top of the screen for free. A fixed element ignores that padding
+// entirely (renders at the true viewport top), so left as-is the spacer
+// would reserve $space-lg more than the header actually needs, pushing
+// the real page content down an extra 24px. This negative margin cancels
+// that out — it's the one place this component still needs to know about
+// its parent's padding, same as it already needs to know the sidebar's width.
+.app-header-spacer {
+  margin-top: -$space-lg;
+  margin-bottom: $space-md;
+
+  // Most pages' __content also drops its own padding to $space-md here.
+  @media (max-width: #{$bp-md - 1px}) {
+    margin-top: -$space-md;
+  }
+}
+
 .app-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: $sidebar-width;
+  right: 0;
   z-index: 100;
   background-color: $color-background;
-  padding: $space-md 0;
-  margin-bottom: $space-md;
+  padding: $space-md $space-lg;
+  transition: left $transition-base;
+
+  &--collapsed {
+    left: $sidebar-width-collapsed;
+  }
+
+  // Sidebar becomes an overlay drawer here — header spans full width.
+  @media (max-width: #{$bp-md - 1px}) {
+    left: 0;
+  }
 
   display: flex;
   justify-content: space-between;
@@ -49,50 +83,13 @@
     gap: $space-md;
   }
 
-  &__menu-button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  // Visuals live in BaseIconButton now (variant="ghost", incl. its own
+  // tooltip). __menu-button only needed a brand-colored icon, which
+  // BaseIconButton's default doesn't set — kept here as the one override.
+  // (Compound selector so it reliably beats .base-icon-button--ghost
+  // regardless of CSS bundle order.)
+  &__menu-button.base-icon-button {
     color: $color-primary;
-  }
-
-  &__icon {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: $color-text-dark;
-
-    &--tooltip {
-      position: relative;
-
-      &::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: calc(100% + 6px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: #1f2937;
-        color: #fff;
-        font-size: $font-xs;
-        font-weight: 500;
-        white-space: nowrap;
-        padding: 4px 8px;
-        border-radius: $radius-sm;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity $transition-fast;
-      }
-
-      &:hover::after {
-        opacity: 1;
-      }
-    }
   }
 }
 

@@ -7,6 +7,7 @@ import { X, Send, Bot } from 'lucide-vue-next'
 import { useBotStore } from '../../../stores/botStore.js'
 import { useAuthStore } from '../../../stores/authStore.js'
 import { useThemeStore } from '../../../stores/themeStore.js'
+import BaseIconButton from '../../common/BaseIconButton/BaseIconButton.vue'
 
 const router     = useRouter()
 const botStore   = useBotStore()
@@ -56,9 +57,9 @@ async function handleSend() {
         <Bot :size="18" />
         <span>Integral Bot</span>
       </div>
-      <button class="integral-bot__close" @click="botStore.close">
+      <BaseIconButton variant="inverse" class="integral-bot__close" @click="botStore.close">
         <X :size="18" />
-      </button>
+      </BaseIconButton>
     </div>
 
     <div ref="listRef" class="integral-bot__list">
@@ -84,13 +85,14 @@ async function handleSend() {
         placeholder="Ask Integral Bot..."
         :disabled="botStore.isLoading"
       />
-      <button
+      <BaseIconButton
         type="submit"
+        variant="solid"
         class="integral-bot__send"
         :disabled="botStore.isLoading || !inputText.trim()"
       >
         <Send :size="16" />
-      </button>
+      </BaseIconButton>
     </form>
   </div>
 </template>

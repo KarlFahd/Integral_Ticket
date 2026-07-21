@@ -1,0 +1,48 @@
+@use "../../../styles/variables" as *;
+
+.agent-panel__status-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.quick-status-item {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &--primary { background: $color-primary; }
+    &--warning { background: $color-warning; }
+    &--info    { background: $color-info;    }
+    &--success { background: $color-success; }
+  }
+
+  &__label {
+    flex: 1;
+    font-size: $font-md;
+    color: $color-text-light;
+  }
+
+  &__count {
+    font-weight: 700;
+    font-size: $font-md;
+    color: $color-text-dark;
+  }
+
+  &--clickable {
+    cursor: pointer;
+    border-radius: $radius-sm;
+    padding: $space-xs;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $color-background;
+    }
+  }
+}

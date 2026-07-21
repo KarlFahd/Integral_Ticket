@@ -41,24 +41,7 @@
     font-weight: 600;
   }
 
-  &__close {
-    border: none;
-    background: transparent;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: $space-xs;
-    border-radius: $radius-sm;
-    transition: $transition-fast;
-    opacity: 0.85;
-
-    &:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.15);
-    }
-  }
+  // Visuals live in BaseIconButton (variant="inverse") now.
 
   &__list {
     flex: 1;
@@ -144,28 +127,14 @@
     }
   }
 
-  &__send {
+  // Colors/hover live in BaseIconButton (variant="solid") — this just pins
+  // it to the same 38px square as the input it sits beside. Compound
+  // selector so it reliably beats .base-icon-button--md's own padding.
+  &__send.base-icon-button {
     width: 38px;
     height: 38px;
-    flex-shrink: 0;
-    border: none;
+    padding: 0;
     border-radius: $radius-md;
-    background-color: $color-primary;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: $transition-fast;
-
-    &:hover:not(:disabled) {
-      opacity: 0.9;
-    }
-
-    &:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
   }
 }
 

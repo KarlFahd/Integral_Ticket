@@ -1,0 +1,86 @@
+@use "../../../styles/variables" as *;
+
+.timeline-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+
+  &__title {
+    margin: 0 0 $space-lg;
+    font-size: $font-base;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+
+  &__steps {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.timeline-step {
+  display: flex;
+  gap: $space-md;
+
+  &__track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid $color-border;
+    background: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: $transition-fast;
+
+    &--done {
+      border-color: $color-primary;
+      background: $color-primary;
+      color: $color-white;
+    }
+
+    &--active {
+      width: 26px;
+      height: 26px;
+      border-color: $color-primary;
+      background: $color-primary;
+    }
+
+    &--pending {
+      border-color: $color-border;
+      background: $color-white;
+    }
+  }
+
+  &__line {
+    width: 2px;
+    flex: 1;
+    min-height: $space-xl;
+    background: $color-border;
+    margin: $space-xs 0;
+    transition: $transition-fast;
+
+    &--done {
+      background: $color-primary;
+    }
+  }
+
+  &__label {
+    font-size: $font-md;
+    color: $color-text-dark;
+    padding-top: 2px;
+    padding-bottom: $space-xl;
+
+    &--done   { color: $color-text-dark; font-weight: 500; }
+    &--active { color: $color-primary;   font-weight: 700; }
+    &--pending { color: $color-text-muted; }
+  }
+}

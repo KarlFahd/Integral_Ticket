@@ -1,7 +1,7 @@
 <script setup>
 import './CreateTicketPage.scss'
 
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useSidebar } from '../../composables/useSidebar.js'
@@ -11,6 +11,10 @@ import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import BaseInput from '../../components/common/BaseInput/BaseInput.vue'
+import BaseChip from '../../components/common/BaseChip/BaseChip.vue'
+import BaseIconButton from '../../components/common/BaseIconButton/BaseIconButton.vue'
+import BaseListButton from '../../components/common/BaseListButton/BaseListButton.vue'
+import BaseSelect from '../../components/common/BaseSelect/BaseSelect.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
 
@@ -41,6 +45,9 @@ const validate = () => {
   validationErrors.value = errors
   return Object.keys(errors).length === 0
 }
+
+watch(subject, () => { validationErrors.value.subject = '' })
+watch(description, () => { validationErrors.value.description = '' })
 
 // ─── Frequently Reported Issues ───────────────────────────────────────────────
 
@@ -110,10 +117,10 @@ const handleSubmit = async () => {
 
       <!-- Sticky action bar — always visible at the top -->
       <div class="create-ticket-page__action-bar">
-        <button class="create-ticket-page__back" @click="handleCancel">
+        <BaseButton variant="ghost" @click="handleCancel">
           <ArrowLeft :size="14" />
           Back To Dashboard
-        </button>
+        </BaseButton>
 
         <div class="create-ticket-page__action-bar-btns">
           <BaseButton variant="secondary" @click="handleCancel">
@@ -142,13 +149,13 @@ const handleSubmit = async () => {
               <label class="form-group__label">
                 Category <span class="form-group__required">*</span>
               </label>
-              <select v-model="category" class="form-group__select">
+              <BaseSelect v-model="category" size="md" class="form-group__select">
                 <option value="">IT Support</option>
                 <option value="Hardware">Hardware</option>
                 <option value="Software">Software</option>
                 <option value="Network">Network</option>
                 <option value="Account">Account</option>
-              </select>
+              </BaseSelect>
             </div>
 
             <div class="form-group">
@@ -156,21 +163,9 @@ const handleSubmit = async () => {
                 Priority <span class="form-group__required">*</span>
               </label>
               <div class="priority-buttons">
-                <button
-                  :class="['priority-button', 'priority-button--low', { 'priority-button--active': priority === 'Low' }]"
-                  type="button"
-                  @click="priority = 'Low'"
-                >Low</button>
-                <button
-                  :class="['priority-button', 'priority-button--medium', { 'priority-button--active': priority === 'Medium' }]"
-                  type="button"
-                  @click="priority = 'Medium'"
-                >Medium</button>
-                <button
-                  :class="['priority-button', 'priority-button--high', { 'priority-button--active': priority === 'High' }]"
-                  type="button"
-                  @click="priority = 'High'"
-                >High</button>
+                <BaseChip color="success" :active="priority === 'Low'" @click="priority = 'Low'">Low</BaseChip>
+                <BaseChip color="warning" :active="priority === 'Medium'" @click="priority = 'Medium'">Medium</BaseChip>
+                <BaseChip color="danger" :active="priority === 'High'" @click="priority = 'High'">High</BaseChip>
               </div>
             </div>
 
@@ -181,6 +176,7 @@ const handleSubmit = async () => {
               v-model="subject"
               label="Subject"
               :required="true"
+              :error="!!validationErrors.subject"
               placeholder="e.g. Login Issue"
             />
             <p v-if="validationErrors.subject" class="form-group__error">
@@ -235,9 +231,9 @@ const handleSubmit = async () => {
             <div v-else class="upload-box upload-box--selected">
               <Paperclip :size="18" />
               <span class="upload-box__filename">{{ attachment.name }}</span>
-              <button type="button" class="upload-box__remove" @click="removeAttachment">
+              <BaseIconButton variant="ghost-danger" size="sm" class="upload-box__remove" @click="removeAttachment">
                 <X :size="14" />
-              </button>
+              </BaseIconButton>
             </div>
           </div>
 
@@ -256,16 +252,15 @@ const handleSubmit = async () => {
               Select a common issue to pre-fill the form.
             </p>
             <div class="side-card__list">
-              <button
+              <BaseListButton
                 v-for="issue in QUICK_ISSUES"
                 :key="issue.label"
                 class="side-card__item"
-                type="button"
                 @click="applyQuickIssue(issue)"
               >
                 <span>{{ issue.label }}</span>
                 <ChevronRight :size="16" />
-              </button>
+              </BaseListButton>
             </div>
           </div>
 

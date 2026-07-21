@@ -1,6 +1,7 @@
 <script setup>
 import { CheckCircle2, XCircle, Info, AlertTriangle, X } from 'lucide-vue-next'
 import { useToast } from '../../../composables/useToast.js'
+import BaseIconButton from '../BaseIconButton/BaseIconButton.vue'
 
 const { toasts, remove } = useToast()
 
@@ -24,9 +25,9 @@ const ICON = {
         >
           <component :is="ICON[t.type]" :size="18" class="toast__icon" />
           <span class="toast__message">{{ t.message }}</span>
-          <button class="toast__close" @click="remove(t.id)" aria-label="Dismiss">
+          <BaseIconButton variant="ghost" size="sm" class="toast__close" @click="remove(t.id)" aria-label="Dismiss">
             <X :size="14" />
-          </button>
+          </BaseIconButton>
           <div
             class="toast__progress"
             :style="{ animationDuration: `${t.duration}ms` }"
@@ -55,37 +56,49 @@ const ICON = {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 13px 14px 13px 14px;
+  padding: 13px 14px 13px 12px;
   border-radius: 10px;
   box-shadow: 0 6px 24px rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.08);
   pointer-events: all;
   position: relative;
   overflow: hidden;
   border: 1px solid transparent;
-  background: #fff;
+  border-left: 4px solid transparent;
+  background: var(--color-white);
   cursor: default;
-
-  &--success {
-    border-color: #bbf7d0;
-    .toast__icon { color: #16a34a; }
-    .toast__progress { background: #16a34a; }
-  }
-  &--error {
-    border-color: #fecaca;
-    .toast__icon { color: #dc2626; }
-    .toast__progress { background: #dc2626; }
-  }
-  &--info {
-    border-color: #bfdbfe;
-    .toast__icon { color: #2563eb; }
-    .toast__progress { background: #2563eb; }
-  }
-  &--warning {
-    border-color: #fde68a;
-    .toast__icon { color: #d97706; }
-    .toast__progress { background: #d97706; }
-  }
 }
+
+.toast--success {
+  border-color: #bbf7d0;
+  border-left-color: #16a34a;
+  background: color-mix(in srgb, var(--color-white) 90%, #16a34a 10%);
+}
+.toast--success .toast__icon { color: #16a34a; }
+.toast--success .toast__progress { background: #16a34a; }
+
+.toast--error {
+  border-color: #fecaca;
+  border-left-color: #dc2626;
+  background: color-mix(in srgb, var(--color-white) 90%, #dc2626 10%);
+}
+.toast--error .toast__icon { color: #dc2626; }
+.toast--error .toast__progress { background: #dc2626; }
+
+.toast--info {
+  border-color: #bfdbfe;
+  border-left-color: #2563eb;
+  background: color-mix(in srgb, var(--color-white) 90%, #2563eb 10%);
+}
+.toast--info .toast__icon { color: #2563eb; }
+.toast--info .toast__progress { background: #2563eb; }
+
+.toast--warning {
+  border-color: #fde68a;
+  border-left-color: #d97706;
+  background: color-mix(in srgb, var(--color-white) 90%, #d97706 10%);
+}
+.toast--warning .toast__icon { color: #d97706; }
+.toast--warning .toast__progress { background: #d97706; }
 
 .toast__icon {
   flex-shrink: 0;
@@ -96,31 +109,17 @@ const ICON = {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text-dark);
   line-height: 1.4;
   padding-right: 6px;
 }
 
+/* Colors/hover live in BaseIconButton (variant="ghost") now — this just
+   keeps its old compact footprint and slight optical alignment nudge. */
 .toast__close {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background .15s, color .15s;
   margin-top: -1px;
   margin-right: -2px;
-
-  &:hover {
-    background: #f3f4f6;
-    color: #374151;
-  }
 }
 
 .toast__progress {

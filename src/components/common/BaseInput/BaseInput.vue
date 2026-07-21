@@ -26,6 +26,11 @@ defineProps({
     type: Boolean,
     default: false,
   },
+
+  error: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -53,7 +58,7 @@ const handleInput = (event) => {
       :value="modelValue"
       :type="type"
       :placeholder="placeholder"
-      class="base-input__field"
+      :class="['base-input__field', { 'base-input__field--error': error }]"
       @input="handleInput"
     />
 

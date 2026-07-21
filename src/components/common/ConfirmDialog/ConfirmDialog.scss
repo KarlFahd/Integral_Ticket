@@ -1,0 +1,69 @@
+@use "../../../styles/variables" as *;
+
+.confirm-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-lg;
+}
+
+.confirm-dialog {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-xl $space-lg $space-lg;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: $shadow-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $color-primary-light;
+    color: $color-primary;
+    margin-bottom: $space-md;
+
+    &--danger {
+      background: rgba(235, 87, 87, 0.12);
+      color: $color-danger;
+    }
+  }
+
+  &__title {
+    margin: 0 0 $space-xs;
+    font-size: $font-lg;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+
+  &__message {
+    margin: 0 0 $space-lg;
+    font-size: $font-md;
+    color: $color-text-light;
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-sm;
+    width: 100%;
+  }
+
+  // Visuals for both live in BaseButton now (variant="secondary" /
+  // variant="primary"|"danger") — flex:1 keeps them splitting the row.
+  &__cancel,
+  &__confirm {
+    flex: 1;
+  }
+}

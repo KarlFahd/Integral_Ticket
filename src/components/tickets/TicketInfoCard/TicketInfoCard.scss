@@ -1,0 +1,58 @@
+@use "../../../styles/variables" as *;
+
+.info-card {
+  background: $color-white;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+
+  &__title {
+    margin: 0 0 $space-md;
+    font-size: $font-base;
+    font-weight: 700;
+    color: $color-text-dark;
+  }
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__label {
+    font-size: $font-md;
+    color: $color-text-light;
+  }
+
+  &__value {
+    font-size: $font-md;
+    font-weight: 500;
+    color: $color-text-dark;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-xs;
+    padding: 2px $space-sm;
+    border-radius: $radius-sm;
+    font-size: $font-sm;
+    font-weight: 500;
+    border: 1px solid currentColor;
+
+    &--primary { color: $color-primary; }
+    &--warning { color: $color-warning; }
+    &--info    { color: $color-info;    }
+    &--success { color: $color-success; }
+    &--danger  { color: $color-danger;  }
+
+    &--outlined {
+      background: transparent;
+    }
+  }
+}

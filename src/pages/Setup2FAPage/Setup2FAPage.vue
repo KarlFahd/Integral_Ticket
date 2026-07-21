@@ -5,6 +5,7 @@ import QRCode from 'qrcode'
 import { useSidebar } from '../../composables/useSidebar.js'
 import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
 import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useAuthStore } from '../../stores/authStore.js'
 import { authApi } from '../../services/authApi.js'
 
@@ -111,10 +112,10 @@ const goHome = () => {
             Your account <strong>{{ authStore.username }}</strong> is protected with
             Microsoft Authenticator. Every login requires your 6-digit code.
           </p>
-          <button class="s2fa-btn s2fa-btn--danger" :disabled="loading" @click="disable2fa">
+          <BaseButton variant="danger" :disabled="loading" @click="disable2fa">
             {{ loading ? 'Disabling…' : 'Disable 2FA' }}
-          </button>
-          <button class="s2fa-back" @click="goHome">← Back to dashboard</button>
+          </BaseButton>
+          <BaseButton variant="link" @click="goHome">← Back to dashboard</BaseButton>
         </template>
 
         <!-- â”€â”€ Idle: not yet set up â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
@@ -127,10 +128,10 @@ const goHome = () => {
             Each account gets its own unique QR code.
           </p>
           <p v-if="error" class="s2fa-error">{{ error }}</p>
-          <button class="s2fa-btn" :disabled="loading" @click="generateQR">
+          <BaseButton :disabled="loading" @click="generateQR">
             {{ loading ? 'Generating…' : 'Generate My QR Code' }}
-          </button>
-          <button class="s2fa-back" @click="goHome">← Back to dashboard</button>
+          </BaseButton>
+          <BaseButton variant="link" @click="goHome">← Back to dashboard</BaseButton>
         </template>
 
         <!-- â”€â”€ QR code: scan it â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
@@ -152,10 +153,10 @@ const goHome = () => {
             Other users have a completely different code.
           </p>
 
-          <button class="s2fa-btn" @click="step = 'confirm'">
+          <BaseButton @click="step = 'confirm'">
             I've scanned it — Next →
-          </button>
-          <button class="s2fa-back" @click="step = 'idle'">← Start over</button>
+          </BaseButton>
+          <BaseButton variant="link" @click="step = 'idle'">← Start over</BaseButton>
         </template>
 
         <!-- â”€â”€ Confirm: enter first code â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
@@ -180,14 +181,13 @@ const goHome = () => {
 
           <p v-if="error" class="s2fa-error">{{ error }}</p>
 
-          <button
-            class="s2fa-btn"
+          <BaseButton
             :disabled="loading || code.length !== 6"
             @click="confirmCode"
           >
             {{ loading ? 'Verifying…' : 'Activate 2FA' }}
-          </button>
-          <button class="s2fa-back" @click="step = 'qr'">← Back to QR code</button>
+          </BaseButton>
+          <BaseButton variant="link" @click="step = 'qr'">← Back to QR code</BaseButton>
         </template>
 
         <!-- â”€â”€ Done â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
@@ -199,7 +199,7 @@ const goHome = () => {
             Microsoft Authenticator will ask for a 6-digit code.
             Keep the app on your phone.
           </p>
-          <button class="s2fa-btn" @click="goHome">Go to Dashboard</button>
+          <BaseButton @click="goHome">Go to Dashboard</BaseButton>
         </template>
 
       </div>
@@ -320,35 +320,6 @@ const goHome = () => {
   width: 100%;
 }
 
-.s2fa-btn {
-  width: 100%;
-  padding: 13px;
-  background: #7c3aed;
-  color: #fff;
-  border: none;
-  border-radius: 9px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .15s;
-
-  &:hover:not(:disabled) { background: #6d28d9; }
-  &:disabled { opacity: 0.45; cursor: not-allowed; }
-
-  &--danger {
-    background: #ef4444;
-    &:hover:not(:disabled) { background: #dc2626; }
-  }
-}
-
-.s2fa-back {
-  background: none;
-  border: none;
-  color: #7c3aed;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 0;
-
-  &:hover { text-decoration: underline; }
-}
+/* .s2fa-btn / .s2fa-back removed — visuals now live in BaseButton
+   (variant="primary"/"danger" and variant="link"). */
 </style>

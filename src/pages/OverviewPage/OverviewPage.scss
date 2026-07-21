@@ -32,23 +32,7 @@
     color: $color-text-muted;
   }
 
-  &__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-xs;
-    background: $color-primary;
-    color: $color-white;
-    border: none;
-    border-radius: $radius-md;
-    padding: $space-sm $space-lg;
-    font-size: $font-md;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: $transition-fast;
-
-    &:hover { opacity: 0.9; }
-  }
+  // Visuals live in BaseButton (variant="primary") now.
 }
 
 // ── Stat cards ────────────────────────────────────────────────────────────────
@@ -132,19 +116,11 @@
     color: $color-text-dark;
   }
 
-  &__link {
-    display: inline-flex;
-    align-items: center;
+  // Visuals live in BaseButton (variant="link") now — this just matches
+  // its tighter icon gap/font-size to the rest of this card's text.
+  &__link.base-button {
     gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
     font-size: $font-sm;
-    color: $color-primary;
-    font-weight: 500;
-    padding: 0;
-
-    &:hover { text-decoration: underline; }
   }
 }
 

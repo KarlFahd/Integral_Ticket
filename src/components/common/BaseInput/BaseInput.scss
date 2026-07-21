@@ -31,5 +31,13 @@
     &:focus {
       border-color: $color-primary;
     }
+
+    &--error {
+      border-color: $color-danger;
+
+      &:focus {
+        border-color: $color-danger;
+      }
+    }
   }
 }

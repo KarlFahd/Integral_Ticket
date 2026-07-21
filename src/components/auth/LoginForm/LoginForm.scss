@@ -81,42 +81,8 @@
     }
   }
 
-  &__back-link {
-    background: none;
-    border: none;
-    color: $color-primary;
-    font-size: $font-sm;
-    cursor: pointer;
-    text-align: center;
-    padding: 0;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
+  // Visuals for both live in BaseButton now (variant="link" / variant="secondary").
   &__google-button {
-    width: 100%;
-    height: $height-input;
-
-    border: 1px solid $color-border;
-    border-radius: $radius-sm;
-
-    background-color: $color-white;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: $space-sm;
-
-    cursor: pointer;
-
-    transition: $transition-fast;
-
-    &:hover {
-      background-color: $color-background;
-    }
-
     img {
       width: 18px;
       height: 18px;

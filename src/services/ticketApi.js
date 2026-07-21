@@ -9,7 +9,6 @@ const STATUS_VARIANTS = {
   'Open':        'primary',
   'Pending':     'warning',
   'In Progress': 'info',
-  'Approved':    'success',
   'Resolved':    'success',
   'Rejected':    'danger',
 }
@@ -92,6 +91,10 @@ export const ticketApi = {
   async updatePriority(id, priority) {
     const { data } = await http.patch(`/tickets/${id}/priority`, { priority })
     return normalizeTicket(data.data)
+  },
+
+  async delete(id) {
+    await http.delete(`/tickets/${id}`)
   },
 
   async getMessages(ticketId) {

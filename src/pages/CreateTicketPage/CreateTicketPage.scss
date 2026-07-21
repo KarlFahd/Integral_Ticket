@@ -29,21 +29,6 @@
     }
   }
 
-  &__back {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-xs;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: $font-md;
-    color: $color-text-light;
-    padding: 0;
-    transition: $transition-fast;
-
-    &:hover { color: $color-primary; }
-  }
-
   &__body {
     display: grid;
     grid-template-columns: 2fr 350px;
@@ -101,20 +86,7 @@
     font-weight: 400;
   }
 
-  &__select {
-    height: $height-input;
-    padding: 0 $space-md;
-    border: 1px solid $color-border;
-    border-radius: $radius-sm;
-    font-size: $font-md;
-    background: $color-white;
-    cursor: pointer;
-    outline: none;
-
-    &:focus {
-      border-color: $color-primary;
-    }
-  }
+  // Visuals live in BaseSelect (size="md") now.
 
   &__textarea-wrapper {
     position: relative;
@@ -163,45 +135,7 @@
   gap: $space-sm;
 }
 
-.priority-button {
-  padding: $space-sm $space-md;
-  border-radius: $radius-md;
-  cursor: pointer;
-  background: $color-white;
-  font-size: $font-md;
-  font-weight: 500;
-  transition: $transition-fast;
-
-  &--low {
-    border: 1px solid $color-success;
-    color: $color-success;
-
-    &.priority-button--active {
-      background: $color-success;
-      color: $color-white;
-    }
-  }
-
-  &--medium {
-    border: 1px solid $color-warning;
-    color: $color-warning;
-
-    &.priority-button--active {
-      background: $color-warning;
-      color: $color-white;
-    }
-  }
-
-  &--high {
-    border: 1px solid $color-danger;
-    color: $color-danger;
-
-    &.priority-button--active {
-      background: $color-danger;
-      color: $color-white;
-    }
-  }
-}
+// Visuals live in BaseChip now (color="success"/"warning"/"danger").
 
 // ─── Upload Box ───────────────────────────────────────────────────────────────
 
@@ -265,19 +199,9 @@
     white-space: nowrap;
   }
 
+  // Colors/hover live in BaseIconButton (variant="ghost-danger") now.
   &__remove {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: $color-danger;
-    display: flex;
-    align-items: center;
-    padding: 0;
     flex-shrink: 0;
-
-    &:hover {
-      opacity: 0.7;
-    }
   }
 }
 
