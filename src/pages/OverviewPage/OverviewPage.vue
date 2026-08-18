@@ -2,10 +2,8 @@
 import './OverviewPage.scss'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { Ticket, CheckCircle2, Clock, AlertCircle, Plus, ArrowRight } from 'lucide-vue-next'
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
@@ -17,8 +15,6 @@ const store     = useTicketStore()
 const authStore = useAuthStore()
 const { isLoading } = storeToRefs(store)
 onMounted(() => store.fetchTickets())
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const allTickets = computed(() => store.tickets ?? [])
 
@@ -66,12 +62,12 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
 </script>
 
 <template>
-  <div class="overview-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="overview-page__content">
-      <AppHeader title="Overview" subtitle="Welcome back to your portal" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="overview-page"
+    content-class="overview-page__content"
+    title="Overview"
+    subtitle="Welcome back to your portal"
+  >
       <!-- Greeting -->
       <div class="overview-greeting">
         <div>
@@ -158,6 +154,5 @@ const goToTickets = () => router.push(authStore.isAdmin ? '/agent-dashboard' : '
         </div>
 
       </div>
-    </main>
-  </div>
+  </AppLayout>
 </template>

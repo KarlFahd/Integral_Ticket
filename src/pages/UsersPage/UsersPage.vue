@@ -3,9 +3,7 @@ import './UsersPage.scss'
 import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { UserPlus, Users, X } from 'lucide-vue-next'
-import { useSidebar } from '../../composables/useSidebar.js'
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import BaseInput from '../../components/common/BaseInput/BaseInput.vue'
@@ -16,7 +14,6 @@ import { useUserStore } from '../../stores/userStore.js'
 const store = useUserStore()
 const { users, isLoading } = storeToRefs(store)
 
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 const showForm   = ref(false)
 const formError  = ref('')
 const submitting = ref(false)
@@ -105,12 +102,12 @@ const roleVariant = (u) => {
 </script>
 
 <template>
-  <div class="users-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="users-page__content">
-      <AppHeader title="Users" subtitle="Manage team members" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="users-page"
+    content-class="users-page__content"
+    title="Users"
+    subtitle="Manage team members"
+  >
       <!-- Page header -->
       <div class="users-header">
         <div class="users-header__left">
@@ -249,6 +246,5 @@ const roleVariant = (u) => {
         </div>
       </template>
 
-    </main>
-  </div>
+  </AppLayout>
 </template>

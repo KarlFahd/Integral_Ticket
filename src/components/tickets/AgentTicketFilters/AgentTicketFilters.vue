@@ -4,7 +4,7 @@
 // agent's own default filter values ('' instead of 'All') and an Export
 // action instead of Add Ticket.
 
-//TICKETS -filter
+//TICKETS -filter-Agent part
 import './AgentTicketFilters.scss'
 import { ref, computed } from 'vue'
 import { Download, X } from 'lucide-vue-next'

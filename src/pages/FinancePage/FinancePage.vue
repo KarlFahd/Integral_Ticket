@@ -1,20 +1,16 @@
-﻿<script setup>
+<script setup>
 import './FinancePage.scss'
 import { Lock } from 'lucide-vue-next'
-import { useSidebar } from '../../composables/useSidebar.js'
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 </script>
 
 <template>
-  <div class="finance-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="finance-page__content">
-      <AppHeader title="Finance" subtitle="Financial overview" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="finance-page"
+    content-class="finance-page__content"
+    title="Finance"
+    subtitle="Financial overview"
+  >
       <div class="finance-maintenance">
         <div class="finance-maintenance__icon">
           <Lock :size="48" />
@@ -26,6 +22,5 @@ const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
         </p>
         <div class="finance-maintenance__badge">Coming Soon</div>
       </div>
-    </main>
-  </div>
+  </AppLayout>
 </template>

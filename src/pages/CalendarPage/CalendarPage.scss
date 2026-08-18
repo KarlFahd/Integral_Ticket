@@ -129,14 +129,44 @@
     line-height: 1;
   }
 
+  &__dots {
+    display: flex;
+    gap: 3px;
+    margin-top: 3px;
+  }
+
   &__dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
     background: $color-primary;
-    margin-top: 3px;
 
     .cal-cell--today & { background: $color-white; }
+  }
+}
+
+// ── Color legend — "this color = this person" ────────────────────────────────
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: $space-md;
+  padding-top: $space-md;
+  border-top: 1px solid $color-border;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: $color-text-muted;
+  }
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
   }
 }
 
@@ -269,49 +299,159 @@
   flex-direction: column;
   gap: 8px;
 
-  &__input {
+  &__editing-badge {
+    align-self: flex-start;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: $color-primary-light;
+    color: $color-primary;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+
+  // Wraps a BaseInput/textarea + its error message — same shape as
+  // CreateTicketPage.scss's .form-group, just scoped to this compact form.
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-text-dark;
+  }
+
+  &__required {
+    color: $color-danger;
+  }
+
+  &__error {
+    color: $color-danger;
+    font-size: 11px;
+    margin: 0;
+  }
+
+  &__textarea {
     width: 100%;
     padding: 9px 12px;
     border: 1px solid $color-border;
     border-radius: $radius-md;
     font-size: 13px;
+    font-family: inherit;
     outline: none;
     box-sizing: border-box;
+    resize: vertical;
     transition: border-color .15s;
 
     &:focus { border-color: $color-primary; }
+
+    &--error {
+      border-color: $color-danger !important;
+    }
   }
 
-  &__time {
-    padding: 8px 12px;
+  // A distinct "panel" for start/end time — each field gets its own label
+  // so both columns share an identical label+control shape and line up
+  // exactly. Only 2 columns (not 3 — Type moved to its own full-width row
+  // above) so each time field has enough room for its wheel popover to
+  // open without overflowing this panel's container.
+  &__schedule {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px;
+    background: $color-background;
     border: 1px solid $color-border;
     border-radius: $radius-md;
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
-    transition: border-color .15s;
-
-    &:focus { border-color: $color-primary; }
   }
 
-  &__colors {
+  &__field {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
   }
 
-  // The swatch color itself is set inline (per event color); this just
-  // shapes the BaseIconButton into a small circle. Compound selector so
-  // it reliably beats .base-icon-button--md's own padding.
-  &__color-dot.base-icon-button {
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    border-radius: 50%;
-    outline-offset: 3px;
-    transition: transform .1s;
+  &__field-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: $color-text-muted;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    &:hover { transform: scale(1.15); }
+  &__optional {
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+
+  // BaseTimePicker brings its own border/focus/height styling — this just
+  // keeps the column from overflowing its grid track.
+  &__time {
+    min-width: 0;
+    width: 100%;
+  }
+
+  &__participants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 8px 0;
+    border-top: 1px dashed $color-border;
+    border-bottom: 1px dashed $color-border;
+  }
+
+  &__participants-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: $color-text-muted;
+  }
+
+  &__participant {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: $color-text-dark;
+    cursor: pointer;
+
+    input { cursor: pointer; }
+  }
+
+  &__participant-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__you {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  &__you-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
   }
 
   &__actions {
@@ -336,9 +476,15 @@
   border-radius: $radius-md;
   padding: 10px 12px;
   border: 1px solid $color-border;
-  transition: box-shadow .15s;
+  cursor: pointer;
+  transition: box-shadow .15s, border-color .15s;
 
   &:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+
+  &--editing {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 1px $color-primary;
+  }
 
   &__stripe {
     width: 4px;
@@ -365,12 +511,32 @@
     text-overflow: ellipsis;
   }
 
-  &__time {
+  &__meta {
     display: flex;
     align-items: center;
     gap: 4px;
     font-size: 11px;
     color: $color-text-muted;
+  }
+
+  &__type {
+    margin-left: 4px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: $color-white;
+    border: 1px solid $color-border;
+    text-transform: capitalize;
+    font-size: 10px;
+  }
+
+  &__by {
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  &__sync-pending {
+    font-size: 10px;
+    color: $color-warning;
   }
 
   // Colors/hover live in BaseIconButton (variant="ghost-danger") now —
@@ -382,5 +548,36 @@
     padding: 0;
     border-radius: $radius-md;
     flex-shrink: 0;
+  }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+// Same breakpoint pattern as CreateTicketPage/TicketDetailPage: the
+// fixed-width side panel collapses to a full-width stacked column below
+// $bp-lg, then padding/spacing tightens further below $bp-md.
+
+@media (max-width: #{$bp-lg - 1px}) {
+  .cal-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: #{$bp-md - 1px}) {
+  .calendar-page__content {
+    padding: $space-md;
+  }
+
+  .cal-card {
+    padding: $space-lg;
+  }
+
+  .cal-cell {
+    font-size: $font-sm;
+  }
+}
+
+@media (max-width: #{$bp-sm - 1px}) {
+  .event-form__schedule {
+    grid-template-columns: 1fr;
   }
 }

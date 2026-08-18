@@ -4,11 +4,9 @@ import './CreateTicketPage.scss'
 import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { Send, ChevronRight, ListChecks, HelpCircle, CheckCircle2, Paperclip, X, ArrowLeft } from 'lucide-vue-next'
 
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import BaseInput from '../../components/common/BaseInput/BaseInput.vue'
 import BaseChip from '../../components/common/BaseChip/BaseChip.vue'
@@ -17,18 +15,18 @@ import BaseListButton from '../../components/common/BaseListButton/BaseListButto
 import BaseSelect from '../../components/common/BaseSelect/BaseSelect.vue'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
+import { CATEGORIES, PRIORITIES } from '../../constants/lookups.js'
 
 const router    = useRouter()
 const store     = useTicketStore()
 const authStore = useAuthStore()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 const { isLoading, error } = storeToRefs(store)
-const subject     = ref('')
-const description = ref('')
-const category    = ref('')
-const priority    = ref('Low')
-const attachment  = ref(null)
-const fileInput   = ref(null)
+const subject      = ref('')
+const description  = ref('')
+const categoryId   = ref(null)
+const priorityId   = ref(PRIORITIES.find(p => p.name === 'Low').id)
+const attachment   = ref(null)
+const fileInput    = ref(null)
 
 // ─── Frontend validation ──────────────────────────────────────────────────────
 
@@ -51,6 +49,9 @@ watch(description, () => { validationErrors.value.description = '' })
 
 // ─── Frequently Reported Issues ───────────────────────────────────────────────
 
+const categoryIdFor = (name) => CATEGORIES.find(c => c.name === name).id
+const priorityIdFor = (name) => PRIORITIES.find(p => p.name === name).id
+
 const QUICK_ISSUES = [
   { label: 'Password Reset',      subject: 'Password Reset Request',   category: 'Account',  priority: 'Medium' },
   { label: 'VPN Access',          subject: 'VPN Access Issue',          category: 'Network',  priority: 'High'   },
@@ -60,9 +61,9 @@ const QUICK_ISSUES = [
 ]
 
 const applyQuickIssue = (issue) => {
-  subject.value  = issue.subject
-  category.value = issue.category
-  priority.value = issue.priority
+  subject.value    = issue.subject
+  categoryId.value = categoryIdFor(issue.category)
+  priorityId.value = priorityIdFor(issue.priority)
   validationErrors.value = {}
 }
 
@@ -96,8 +97,8 @@ const handleSubmit = async () => {
     await store.addTicket({
       subject:     subject.value.trim(),
       description: description.value.trim(),
-      category:    category.value || 'Software',
-      priority:    priority.value,
+      categoryId:  categoryId.value || categoryIdFor('Software'),
+      priorityId:  priorityId.value,
       attachment:  attachment.value ? attachment.value.name : null,
       createdBy:   authStore.username,
     })
@@ -109,12 +110,12 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="create-ticket-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="create-ticket-page__content">
-      <AppHeader title="Add Ticket" subtitle="Submit a new support request" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="create-ticket-page"
+    content-class="create-ticket-page__content"
+    title="Add Ticket"
+    subtitle="Submit a new support request"
+  >
       <!-- Sticky action bar — always visible at the top -->
       <div class="create-ticket-page__action-bar">
         <BaseButton variant="ghost" @click="handleCancel">
@@ -149,12 +150,9 @@ const handleSubmit = async () => {
               <label class="form-group__label">
                 Category <span class="form-group__required">*</span>
               </label>
-              <BaseSelect v-model="category" size="md" class="form-group__select">
-                <option value="">IT Support</option>
-                <option value="Hardware">Hardware</option>
-                <option value="Software">Software</option>
-                <option value="Network">Network</option>
-                <option value="Account">Account</option>
+              <BaseSelect v-model="categoryId" size="md" class="form-group__select">
+                <option :value="null">IT Support</option>
+                <option v-for="cat in CATEGORIES" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
               </BaseSelect>
             </div>
 
@@ -163,9 +161,13 @@ const handleSubmit = async () => {
                 Priority <span class="form-group__required">*</span>
               </label>
               <div class="priority-buttons">
-                <BaseChip color="success" :active="priority === 'Low'" @click="priority = 'Low'">Low</BaseChip>
-                <BaseChip color="warning" :active="priority === 'Medium'" @click="priority = 'Medium'">Medium</BaseChip>
-                <BaseChip color="danger" :active="priority === 'High'" @click="priority = 'High'">High</BaseChip>
+                <BaseChip
+                  v-for="pri in PRIORITIES"
+                  :key="pri.id"
+                  :color="pri.name === 'Low' ? 'success' : pri.name === 'Medium' ? 'warning' : 'danger'"
+                  :active="priorityId === pri.id"
+                  @click="priorityId = pri.id"
+                >{{ pri.name }}</BaseChip>
               </div>
             </div>
 
@@ -289,7 +291,5 @@ const handleSubmit = async () => {
 
       </div>
 
-    </main>
-
-  </div>
+  </AppLayout>
 </template>

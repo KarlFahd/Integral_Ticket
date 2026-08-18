@@ -10,8 +10,7 @@ import {
   Send,
 } from 'lucide-vue-next'
 
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import ResolveCelebration from '../../components/common/ResolveCelebration/ResolveCelebration.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import ConfirmDialog from '../../components/common/ConfirmDialog/ConfirmDialog.vue'
@@ -21,7 +20,6 @@ import TicketSummaryCard from '../../components/tickets/TicketSummaryCard/Ticket
 import TicketInfoCard from '../../components/tickets/TicketInfoCard/TicketInfoCard.vue'
 import ProgressTimeline from '../../components/tickets/ProgressTimeline/ProgressTimeline.vue'
 import TicketActionsCard from '../../components/tickets/TicketActionsCard/TicketActionsCard.vue'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
 import { useNotificationStore } from '../../stores/notificationStore.js'
@@ -35,7 +33,6 @@ const store = useTicketStore()
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
 const toast = useToast()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const ticket = ref(null)
 const isLoading = ref(true)
@@ -128,11 +125,11 @@ const handleSend = async () => {
 
 const celebration = ref(null)
 
-const handleUpdateStatus = async (newStatus) => {
-  const updated = await store.updateTicketStatus(ticket.value.id, newStatus)
+const handleUpdateStatus = async (newStatusId) => {
+  const updated = await store.updateTicketStatus(ticket.value.id, newStatusId)
   if (updated) ticket.value = updated
   // toast is handled in ticketStore
-  if (newStatus === 'Resolved') celebration.value?.fire()
+  if (updated?.status === 'Resolved') celebration.value?.fire()
 }
 
 // â”€â”€â”€ Delete Ticket â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -155,12 +152,12 @@ const handleDeleteTicket = async () => {
 </script>
 
 <template>
-  <div class="agent-ticket-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="agent-ticket-page__content">
-      <AppHeader title="Ticket Details" subtitle="Review and respond to this ticket" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="agent-ticket-page"
+    content-class="agent-ticket-page__content"
+    title="Ticket Details"
+    subtitle="Review and respond to this ticket"
+  >
       <BaseButton variant="ghost" class="ticket-detail-page__back" @click="goBack">
         <ArrowLeft :size="14" />
         Back to tickets
@@ -276,8 +273,6 @@ const handleDeleteTicket = async () => {
 
       </div>
 
-    </main>
-
     <ResolveCelebration ref="celebration" />
 
     <ConfirmDialog
@@ -290,5 +285,5 @@ const handleDeleteTicket = async () => {
       @cancel="showDeleteConfirm = false"
     />
 
-  </div>
+  </AppLayout>
 </template>

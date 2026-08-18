@@ -3,7 +3,6 @@ import './AgentDashboardPage.scss'
 
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { storeToRefs } from 'pinia'
 import {
   TicketIcon,
@@ -12,8 +11,7 @@ import {
   CheckCircle2,
 } from 'lucide-vue-next'
 
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import AgentStatCard from '../../components/tickets/AgentStatCard/AgentStatCard.vue'
 import AgentTicketFilters from '../../components/tickets/AgentTicketFilters/AgentTicketFilters.vue'
 import AgentTicketTable from '../../components/tickets/AgentTicketTable/AgentTicketTable.vue'
@@ -33,8 +31,6 @@ const store = useTicketStore()
 const { tickets, isLoading, openCount, pendingCount, inProgressCount, resolvedCount } = storeToRefs(store)
 
 onMounted(() => store.fetchTickets())
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 // â”€â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -76,12 +72,12 @@ const categoryStats = computed(() => {
 </script>
 
 <template>
-  <div class="agent-dashboard">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="agent-dashboard__content">
-      <AppHeader title="Support Dashboard" subtitle="Manage and resolve support tickets" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="agent-dashboard"
+    content-class="agent-dashboard__content"
+    title="Support Dashboard"
+    subtitle="Manage and resolve support tickets"
+  >
       <div class="agent-dashboard__inner">
 
         <div class="agent-dashboard__body">
@@ -138,7 +134,5 @@ const categoryStats = computed(() => {
 
         </div>
       </div>
-    </main>
-
-  </div>
+  </AppLayout>
 </template>

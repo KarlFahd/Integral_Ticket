@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { ticketApi } from '../services/ticketApi.js'
 import { useToast }   from '../composables/useToast.js'
+import { CATEGORIES } from '../constants/lookups.js'
 
 export const useTicketStore = defineStore('tickets', () => {
   const toast = useToast()
@@ -39,15 +40,15 @@ export const useTicketStore = defineStore('tickets', () => {
     }
   }
 
-  async function addTicket({ subject, description, category, priority, attachment, createdBy }) {
+  async function addTicket({ subject, description, categoryId, priorityId, attachment, createdBy }) {
     isLoading.value = true
     error.value = null
     try {
       const ticket = await ticketApi.create({
         title:       subject,
         description,
-        category:    category || 'Software',
-        priority,
+        category_id: categoryId || CATEGORIES.find(c => c.name === 'Software').id,
+        priority_id: priorityId,
         created_by:  createdBy || 'current_user',
         attachment:  attachment || null,
       })
@@ -63,12 +64,12 @@ export const useTicketStore = defineStore('tickets', () => {
     }
   }
 
-  async function updateTicketStatus(id, newStatus) {
+  async function updateTicketStatus(id, newStatusId) {
     try {
-      const updated = await ticketApi.updateStatus(id, newStatus)
+      const updated = await ticketApi.updateStatus(id, newStatusId)
       const index = tickets.value.findIndex(t => t.id === id)
       if (index !== -1) tickets.value[index] = updated
-      toast.success(`Status updated to "${newStatus}".`)
+      toast.success(`Status updated to "${updated.status}".`)
       return updated
     } catch (e) {
       error.value = 'Failed to update status.'
@@ -77,12 +78,12 @@ export const useTicketStore = defineStore('tickets', () => {
     }
   }
 
-  async function updateTicketPriority(id, newPriority) {
+  async function updateTicketPriority(id, newPriorityId) {
     try {
-      const updated = await ticketApi.updatePriority(id, newPriority)
+      const updated = await ticketApi.updatePriority(id, newPriorityId)
       const index = tickets.value.findIndex(t => t.id === id)
       if (index !== -1) tickets.value[index] = updated
-      toast.success(`Priority updated to "${newPriority}".`)
+      toast.success(`Priority updated to "${updated.priority}".`)
       return updated
     } catch (e) {
       error.value = 'Failed to update priority.'

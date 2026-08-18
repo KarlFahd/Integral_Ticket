@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { notificationApi, normalizeNotification } from '../services/notificationApi.js'
+import { eventReminderApi, normalizeEventReminder } from '../services/eventReminderApi.js'
 import { echo } from '../echo.js'
 
 export const useNotificationStore = defineStore('notifications', () => {
@@ -14,7 +15,14 @@ export const useNotificationStore = defineStore('notifications', () => {
   async function fetchNotifications(username) {
     isLoading.value = true
     try {
-      notifications.value = await notificationApi.getAll(username)
+      const [tickets, reminders] = await Promise.all([
+        notificationApi.getAll(username),
+        eventReminderApi.getAll(username),
+      ])
+      notifications.value = [
+        ...tickets.map(n => ({ ...n, kind: 'ticket' })),
+        ...reminders.map(r => ({ ...r, kind: 'event-reminder' })),
+      ].sort((a, b) => b.id - a.id)
     } finally {
       isLoading.value = false
     }
@@ -26,23 +34,37 @@ export const useNotificationStore = defineStore('notifications', () => {
 
     fetchNotifications(username)
 
-    echo.channel('notifications.' + username)
-      .listen('.notification.created', (data) => {
-        const notification = normalizeNotification(data.notification)
+    const channel = echo.channel('notifications.' + username)
 
-        // Already looking at this ticket's conversation — no need to alert, just clear it.
-        if (notification.ticketId === activeTicketId.value) {
-          notificationApi.clear(notification.id)
-          return
-        }
+    channel.listen('.notification.created', (data) => {
+      const notification = normalizeNotification(data.notification)
 
-        notifications.value.unshift(notification)
-      })
+      // Already looking at this ticket's conversation — no need to alert, just clear it.
+      if (notification.ticketId === activeTicketId.value) {
+        notificationApi.clear(notification.id)
+        return
+      }
+
+      notifications.value.unshift({ ...notification, kind: 'ticket' })
+    })
+
+    channel.listen('.event-reminder.created', (data) => {
+      const reminder = normalizeEventReminder(data.reminder)
+      notifications.value.unshift({ ...reminder, kind: 'event-reminder' })
+    })
   }
 
-  async function clear(id) {
-    notifications.value = notifications.value.filter(n => n.id !== id)
-    await notificationApi.clear(id)
+  async function clear(notification) {
+    const id = typeof notification === 'object' ? notification.id : notification
+    const kind = typeof notification === 'object' ? notification.kind : 'ticket'
+
+    notifications.value = notifications.value.filter(n => n.id !== id || n.kind !== kind)
+
+    if (kind === 'event-reminder') {
+      await eventReminderApi.clear(id)
+    } else {
+      await notificationApi.clear(id)
+    }
   }
 
   // Call when the user opens a ticket's conversation — drops any pending

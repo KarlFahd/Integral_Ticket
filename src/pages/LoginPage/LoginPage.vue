@@ -1,8 +1,8 @@
 <script setup>
-import logoIcon from '../assets/images/logo-icon.png.png'
-import LoginBanner from '../components/auth/LoginBanner/LoginBanner.vue'
-import LoginForm from '../components/auth/LoginForm/LoginForm.vue'
-import './LoginPage/LoginPage.scss'
+import logoIcon from '../../assets/images/logo-icon.png.png'
+import LoginBanner from '../../components/auth/LoginBanner/LoginBanner.vue'
+import LoginForm from '../../components/auth/LoginForm/LoginForm.vue'
+import './LoginPage.scss'
 </script>
 
 <template>

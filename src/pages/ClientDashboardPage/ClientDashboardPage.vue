@@ -3,12 +3,10 @@ import './ClientDashboardPage.scss'
 
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { Ticket, Timer, RefreshCw, CheckCircle, TicketX } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import TicketStatCard from '../../components/tickets/TicketStatCard/TicketStatCard.vue'
 import TicketFilters from '../../components/tickets/TicketFilters/TicketFilters.vue'
 import TicketCard from '../../components/tickets/TicketCard/TicketCard.vue'
@@ -23,8 +21,6 @@ const authStore = useAuthStore()
 const { tickets, isLoading } = storeToRefs(store)
 
 onMounted(() => store.fetchTickets())
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const searchText = ref('')
 const selectedStatus = ref('All')
@@ -88,12 +84,12 @@ const goToTicket = (id) => {
 </script>
 
 <template>
-  <div class="client-dashboard-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="client-dashboard-page__content">
-      <AppHeader title="My Tickets" subtitle="Track and manage your support requests" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="client-dashboard-page"
+    content-class="client-dashboard-page__content"
+    title="My Tickets"
+    subtitle="Track and manage your support requests"
+  >
       <!-- Stat Cards: skeleton while loading, real cards when ready -->
       <div class="stats-row">
         <template v-if="isLoading">
@@ -184,7 +180,5 @@ const goToTicket = (id) => {
 
       </div>
 
-    </main>
-
-  </div>
+  </AppLayout>
 </template>

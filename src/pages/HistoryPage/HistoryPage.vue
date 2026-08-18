@@ -14,11 +14,9 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { History as HistoryIcon, CircleUserRound, TicketX } from 'lucide-vue-next'
 
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import BaseSearchInput from '../../components/common/BaseSearchInput/BaseSearchInput.vue'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { useTicketStore } from '../../stores/ticketStore.js'
 
 const router = useRouter()
@@ -26,8 +24,6 @@ const store = useTicketStore()
 const { tickets, isLoading } = storeToRefs(store)
 
 onMounted(() => store.fetchTickets())
-
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const searchQuery = ref('')
 
@@ -42,12 +38,12 @@ const goToTicket = (id) => router.push('/agent-ticket/' + id)
 </script>
 
 <template>
-  <div class="agent-dashboard">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="agent-dashboard__content">
-      <AppHeader title="Ticket History" subtitle="Resolved tickets archive" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="agent-dashboard"
+    content-class="agent-dashboard__content"
+    title="Ticket History"
+    subtitle="Resolved tickets archive"
+  >
       <div class="agent-dashboard__inner">
 
         <div class="history-header">
@@ -134,7 +130,5 @@ const goToTicket = (id) => router.push('/agent-ticket/' + id)
         </div>
 
       </div>
-    </main>
-
-  </div>
+  </AppLayout>
 </template>

@@ -83,13 +83,13 @@ export const ticketApi = {
     return normalizeTicket(data.data)
   },
 
-  async updateStatus(id, status) {
-    const { data } = await http.patch(`/tickets/${id}/status`, { status })
+  async updateStatus(id, statusId) {
+    const { data } = await http.patch(`/tickets/${id}/status`, { status_id: statusId })
     return normalizeTicket(data.data)
   },
 
-  async updatePriority(id, priority) {
-    const { data } = await http.patch(`/tickets/${id}/priority`, { priority })
+  async updatePriority(id, priorityId) {
+    const { data } = await http.patch(`/tickets/${id}/priority`, { priority_id: priorityId })
     return normalizeTicket(data.data)
   },
 

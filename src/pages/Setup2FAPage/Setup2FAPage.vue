@@ -2,16 +2,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import QRCode from 'qrcode'
-import { useSidebar } from '../../composables/useSidebar.js'
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useAuthStore } from '../../stores/authStore.js'
 import { authApi } from '../../services/authApi.js'
 
 const router    = useRouter()
 const authStore = useAuthStore()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 // â”€â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 // 'idle' → 'qr' → 'confirm' → 'done' | 'active' (already enabled)
@@ -93,12 +90,12 @@ const goHome = () => {
 </script>
 
 <template>
-  <div class="setup-2fa-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="setup-2fa-page__content">
-      <AppHeader title="Two-Factor Authentication" subtitle="Secure your account" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="setup-2fa-page"
+    content-class="setup-2fa-page__content"
+    title="Two-Factor Authentication"
+    subtitle="Secure your account"
+  >
       <div class="s2fa-card">
 
         <!-- Loading -->
@@ -204,9 +201,7 @@ const goHome = () => {
 
       </div>
 
-    </main>
-
-  </div>
+  </AppLayout>
 </template>
 
 <style scoped>

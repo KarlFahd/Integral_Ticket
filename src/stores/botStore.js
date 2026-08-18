@@ -8,7 +8,13 @@ export const useBotStore = defineStore('bot', () => {
   const isOpen    = ref(false)
   const isLoading = ref(false)
   const error     = ref(null)
-  const messages  = ref([{ role: 'assistant', content: WELCOME_MESSAGE }])
+
+  // The full conversation history, sent to the backend on every message so
+  // Gemini has context for its reply (e.g. "which ticket did I just mention?").
+  // Format: [{ role: 'user'|'assistant', content: string }, ...]
+  // Note: 'assistant' here is our app's convention — the backend renames it
+  // to 'model' before forwarding to Gemini (see BotService::toGeminiContents).
+  const messages = ref([{ role: 'assistant', content: WELCOME_MESSAGE }])
 
   function toggle() {
     isOpen.value = !isOpen.value
@@ -20,16 +26,28 @@ export const useBotStore = defineStore('bot', () => {
 
   function reset() {
     messages.value = [{ role: 'assistant', content: WELCOME_MESSAGE }]
-    error.value = null
-    isOpen.value = false
+    error.value    = null
+    isOpen.value   = false
   }
 
-  // Returns the `actions` array from the reply so the caller (which has
-  // access to the router/theme store) can apply them.
+  /**
+   * Send a user message and return the actions array from the reply.
+   *
+   * Why return actions instead of applying them here?
+   * The store has no access to the Vue Router or the theme store — those are
+   * UI/framework concerns. The component (IntegralBot.vue) owns those
+   * dependencies and calls applyActions() after sendMessage() resolves.
+   *
+   * Full call chain:
+   *   sendMessage() → botApi.chat() → POST /api/bot/chat
+   *   → BotService (agentic loop: Gemini ↔ MCP tools)
+   *   → { reply: string, actions: [{type, ...}] }
+   */
   async function sendMessage(text, { username, isAdmin, isHr }) {
     const trimmed = text.trim()
     if (!trimmed || isLoading.value) return []
 
+    // Push user message immediately so it appears in the chat while we wait.
     messages.value.push({ role: 'user', content: trimmed })
     isLoading.value = true
     error.value = null
@@ -41,7 +59,10 @@ export const useBotStore = defineStore('bot', () => {
         isAdmin,
         isHr,
       })
+
       messages.value.push({ role: 'assistant', content: reply })
+
+      // Return the actions list so the component can apply them (navigate, theme).
       return actions ?? []
     } catch (e) {
       error.value = 'Integral Bot is unavailable right now.'

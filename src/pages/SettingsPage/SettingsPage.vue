@@ -1,10 +1,8 @@
-﻿<script setup>
+<script setup>
 import './SettingsPage.scss'
 import { useRouter } from 'vue-router'
 import { Sun, Moon, User, LogOut } from 'lucide-vue-next'
-import { useSidebar } from '../../composables/useSidebar.js'
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
 import { useThemeStore } from '../../stores/themeStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
@@ -12,7 +10,6 @@ import { useAuthStore } from '../../stores/authStore.js'
 const router = useRouter()
 const themeStore = useThemeStore()
 const authStore = useAuthStore()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 const handleLogout = () => {
   authStore.logout()
   router.push('/login')
@@ -20,12 +17,12 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <div class="settings-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="settings-page__content">
-      <AppHeader title="Settings" subtitle="Manage your preferences" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="settings-page"
+    content-class="settings-page__content"
+    title="Settings"
+    subtitle="Manage your preferences"
+  >
       <div class="settings-section">
         <h3 class="settings-section__title">Appearance</h3>
 
@@ -72,6 +69,5 @@ const handleLogout = () => {
           </BaseButton>
         </div>
       </div>
-    </main>
-  </div>
+  </AppLayout>
 </template>

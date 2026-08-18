@@ -51,7 +51,13 @@ const toggleNotifications = () => {
 
 const handleNotificationClick = async (notification) => {
   showNotifications.value = false
-  notificationStore.clear(notification.id)
+  notificationStore.clear(notification)
+
+  if (notification.kind === 'event-reminder') {
+    router.push('/calendar')
+    return
+  }
+
   const path = authStore.isAdmin ? '/agent-ticket/' : '/ticket/'
   router.push(path + notification.ticketId)
 }
@@ -150,16 +156,23 @@ onUnmounted(() => {
 
             <BaseListButton
               v-for="n in notificationStore.notifications"
-              :key="n.id"
+              :key="`${n.kind}-${n.id}`"
               class="notif-item"
               @click="handleNotificationClick(n)"
             >
               <span class="notif-item__dot"></span>
               <div class="notif-item__body">
-                <span class="notif-item__title">
-                  <strong>{{ n.sender }}</strong> {{ n.isAgent ? 'replied on' : 'messaged about' }}
-                  <em>{{ n.ticketTitle }}</em>
-                </span>
+                <template v-if="n.kind === 'event-reminder'">
+                  <span class="notif-item__title">
+                    <strong>Calendar</strong> reminder — <em>{{ n.eventTitle }}</em>
+                  </span>
+                </template>
+                <template v-else>
+                  <span class="notif-item__title">
+                    <strong>{{ n.sender }}</strong> {{ n.isAgent ? 'replied on' : 'messaged about' }}
+                    <em>{{ n.ticketTitle }}</em>
+                  </span>
+                </template>
                 <span class="notif-item__preview">{{ n.preview }}</span>
                 <span class="notif-item__time">{{ n.time }}</span>
               </div>

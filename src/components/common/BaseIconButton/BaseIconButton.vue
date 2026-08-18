@@ -39,7 +39,11 @@ defineProps({
 
 const emit = defineEmits(['click'])
 
-const handleClick = () => emit('click')
+// Forward the native event — without it, a caller using @click.stop or
+// @click.prevent on <BaseIconButton> crashes: those modifiers call
+// event.stopPropagation()/preventDefault() on whatever gets emitted, and
+// with no payload that's undefined.
+const handleClick = (event) => emit('click', event)
 </script>
 
 <template>

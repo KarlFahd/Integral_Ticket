@@ -9,8 +9,7 @@ import {
   Send,
 } from 'lucide-vue-next'
 
-import AppSidebar from '../../components/layout/AppSidebar/AppSidebar.vue'
-import AppHeader from '../../components/layout/AppHeader/AppHeader.vue'
+import AppLayout from '../../components/layout/AppLayout/AppLayout.vue'
 import SkeletonLoader from '../../components/common/SkeletonLoader/SkeletonLoader.vue'
 import ConfirmDialog from '../../components/common/ConfirmDialog/ConfirmDialog.vue'
 import BaseButton from '../../components/common/BaseButton/BaseButton.vue'
@@ -19,7 +18,6 @@ import TicketSummaryCard from '../../components/tickets/TicketSummaryCard/Ticket
 import TicketInfoCard from '../../components/tickets/TicketInfoCard/TicketInfoCard.vue'
 import ProgressTimeline from '../../components/tickets/ProgressTimeline/ProgressTimeline.vue'
 import TicketActionsCard from '../../components/tickets/TicketActionsCard/TicketActionsCard.vue'
-import { useSidebar } from '../../composables/useSidebar.js'
 import { useTicketStore } from '../../stores/ticketStore.js'
 import { useAuthStore } from '../../stores/authStore.js'
 import { useNotificationStore } from '../../stores/notificationStore.js'
@@ -33,7 +31,6 @@ const store = useTicketStore()
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
 const toast = useToast()
-const { isSidebarCollapsed, toggleSidebar, closeSidebar } = useSidebar()
 
 const ticket = ref(null)
 const isLoading = ref(true)
@@ -149,12 +146,12 @@ const handleDeleteTicket = async () => {
 </script>
 
 <template>
-  <div class="ticket-detail-page">
-    <AppSidebar :is-collapsed="isSidebarCollapsed" @close="closeSidebar" @toggle="toggleSidebar" />
-
-    <main class="ticket-detail-page__content">
-      <AppHeader title="Ticket Details" subtitle="View and respond to your ticket" @toggle-sidebar="toggleSidebar" />
-
+  <AppLayout
+    class="ticket-detail-page"
+    content-class="ticket-detail-page__content"
+    title="Ticket Details"
+    subtitle="123View and respond to your ticket"
+  >
       <BaseButton variant="ghost" class="ticket-detail-page__back" @click="goBack">
         <ArrowLeft :size="14" />
         Back to tickets
@@ -267,8 +264,6 @@ const handleDeleteTicket = async () => {
 
       </div>
 
-    </main>
-
     <ConfirmDialog
       :visible="showDeleteConfirm"
       title="Delete this ticket?"
@@ -279,5 +274,5 @@ const handleDeleteTicket = async () => {
       @cancel="showDeleteConfirm = false"
     />
 
-  </div>
+  </AppLayout>
 </template>

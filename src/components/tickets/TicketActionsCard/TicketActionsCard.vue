@@ -14,6 +14,7 @@ import { RefreshCw, Clock, Trash2, ChevronDown, ChevronUp } from 'lucide-vue-nex
 import BaseListButton from '../../common/BaseListButton/BaseListButton.vue'
 import BaseButton from '../../common/BaseButton/BaseButton.vue'
 import BaseChip from '../../common/BaseChip/BaseChip.vue'
+import { STATUSES } from '../../../constants/lookups.js'
 
 defineProps({
   isAgent: {
@@ -30,13 +31,19 @@ const toggleAction = (key) => {
   openAction.value = openAction.value === key ? null : key
 }
 
-const STATUS_OPTIONS = [
-  { label: 'Open',        value: 'Open',        variant: 'primary' },
-  { label: 'Pending',     value: 'Pending',     variant: 'warning' },
-  { label: 'In Progress', value: 'In Progress', variant: 'info'    },
-  { label: 'Resolved',    value: 'Resolved',    variant: 'success' },
-  { label: 'Rejected',    value: 'Rejected',    variant: 'danger'  },
-]
+const STATUS_VARIANTS = {
+  'Open':        'primary',
+  'Pending':     'warning',
+  'In Progress': 'info',
+  'Resolved':    'success',
+  'Rejected':    'danger',
+}
+
+const STATUS_OPTIONS = STATUSES.map(s => ({
+  label: s.name,
+  value: s.id,
+  variant: STATUS_VARIANTS[s.name] ?? 'primary',
+}))
 
 const selectStatus = (value) => {
   emit('update-status', value)

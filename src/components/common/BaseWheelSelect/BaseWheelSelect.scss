@@ -1,0 +1,123 @@
+@use "../../../styles/variables" as *;
+
+.wheel-select {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  &__label {
+    font-size: $font-md;
+    font-weight: 600;
+    color: $color-text-dark;
+  }
+
+  &__required {
+    color: $color-danger;
+    margin-left: 2px;
+  }
+
+  &__field {
+    height: $height-input;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    background: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-sm;
+    font-size: $font-md;
+    color: $color-text-dark;
+    cursor: pointer;
+    outline: none;
+    transition: border-color .15s;
+
+    &:hover { border-color: $color-primary; }
+
+    &--open { border-color: $color-primary; }
+
+    &--error {
+      border-color: $color-danger;
+
+      &:hover { border-color: $color-danger; }
+    }
+
+    svg {
+      color: $color-text-muted;
+      flex-shrink: 0;
+    }
+  }
+
+  &__placeholder {
+    color: $color-text-muted;
+  }
+
+  // ── The wheel popover — teleported, see BaseTimePicker.scss for why ──────
+  &__panel {
+    z-index: 1000;
+    visibility: hidden;
+    background: $color-white;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    box-shadow: $shadow-md;
+    padding: 0 $space-sm;
+
+    &--ready { visibility: visible; }
+  }
+
+  &__highlight {
+    position: absolute;
+    top: 50%;
+    left: $space-sm;
+    right: $space-sm;
+    height: 36px;
+    transform: translateY(-50%);
+    background: $color-primary-light;
+    border-radius: $radius-sm;
+    pointer-events: none;
+  }
+
+  &__wheel {
+    position: relative;
+    z-index: 1;
+    height: 108px;
+    width: 160px;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    mask-image: linear-gradient(to bottom, transparent 0%, black 34%, black 66%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 34%, black 66%, transparent 100%);
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  &__pad {
+    height: 36px;
+    scroll-snap-align: center;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 100%;
+    border: none;
+    background: none;
+    font-size: $font-md;
+    color: $color-text-muted;
+    cursor: pointer;
+    scroll-snap-align: center;
+    transition: color .15s;
+
+    &--active {
+      color: $color-primary;
+      font-weight: 700;
+    }
+  }
+}
